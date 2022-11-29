@@ -18,7 +18,7 @@ async def ping(ctx):
 @bot.command
 @lightbulb.command('playful-insults', 'Make ToastBot reply with a funny insult')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def ping(ctx):
+async def playfulinsult(ctx):
     playfulinsult = open("playfulinsult.txt", "r")
     await ctx.respond(random.choice(playfulinsult))
 
