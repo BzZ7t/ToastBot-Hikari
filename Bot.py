@@ -1,6 +1,8 @@
+#/#/#/#/#/#/#/#/# ------> Imports
+import random
+import time
 import hikari
 import lightbulb
-import random
 
 bot = lightbulb.BotApp(token='MTA0NjE1NzgwMTgyNDczNTMxMw.GpdOFU.UBb6SSLG8nqfo4FOi4ZKF0MNEO3xKm4avvtl7E')
 
@@ -10,17 +12,29 @@ async def startup(event):
 
 #/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/-----> all cmds
 @bot.command#\--------> /ping
-@lightbulb.command('ping', 'Says "pong!"')
+@lightbulb.command('ping',
+                   'Says "pong!"')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(ctx):
     await ctx.respond("Pong!")
+
+@bot.command#------------> /time
+@lightbulb.command("get-time",
+                   "Says the current time")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def timehere(ctx):
+    t = time.localtime()
+    current_time = time.strftime("%H:%M", t)
+    await ctx.respond(current_time)
+    
 #============================================> /fun
 @bot.command
-@lightbulb.command('playful-insults', 'Make ToastBot reply with a funny insult')
+@lightbulb.command('strange-insults',
+                   'Make ToastBot reply with a somewhat strange insult')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def playfulinsult(ctx):
-    playfulinsult = open("playfulinsult.txt", "r")
-    await ctx.respond(random.choice(playfulinsult))
-
+async def strangeinsult(ctx):
+    my_file = open("strangeinsults.txt", "r",encoding="utf-8")
+    content_list = my_file.readlines()
+    await ctx.respond(str(content_list[random.randint(0,len(content_list)-1)]))
 
 bot.run()
