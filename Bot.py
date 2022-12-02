@@ -11,22 +11,25 @@ async def startup(event):
     print("ToastBot has successfully started!")
 
 #/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/-----> all cmds
-@bot.command#\--------> /ping
+@bot.command#------------> /ping
 @lightbulb.command('ping',
                    'Says "pong!"')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(ctx):
     await ctx.respond("Pong!")
 
-@bot.command#------------> /time
+@bot.command#----------------> /time
 @lightbulb.command("get-time",
                    "Says the current time")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def timehere(ctx):
     t = time.localtime()
-    current_time = time.strftime("%H:%M", t)
-    await ctx.respond(current_time)
-    
+    current_time = time.strftime("%I:%M %p", t)
+    current_time_hour = time.strftime("%I", t)
+    current_time_aftrm = time.strftime("%p", t)
+    await ctx.respond("The current time in the UK is: "+current_time)
+    if int(current_time_hour) >= 12 and current_time_aftrm == "PM":
+        await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
 #============================================> /fun
 @bot.command
 @lightbulb.command('strange-insults',

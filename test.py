@@ -1,3 +1,1 @@
-import random
-playfulinsult = open("playfulinsult.txt", "r")
-print(random.choice(playfulinsult))
+#THIS FILE IS USED TO TEST A BUNCH OF RANDOM CRAP
