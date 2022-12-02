@@ -8,10 +8,10 @@ bot = lightbulb.BotApp(token='MTA0NjE1NzgwMTgyNDczNTMxMw.GpdOFU.UBb6SSLG8nqfo4FO
 
 @bot.listen(hikari.StartedEvent)
 async def startup(event):
-    print("ToastBot has successfully started!")
+    print("ToastBot has successfully started!\nIf you have unauthorised access to this bot, fuck you! <<<333")
 
 #/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/-----> all cmds
-@bot.command#------------> /ping
+@bot.command#\--------> /ping
 @lightbulb.command('ping',
                    'Says "pong!"')
 @lightbulb.implements(lightbulb.SlashCommand)
@@ -32,9 +32,16 @@ async def timehere(ctx):
         await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
 #============================================> /fun
 @bot.command
+@lightbulb.command("fun",
+                   "Do all the **fun** stuff :D")
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def fun(ctx):
+    pass
+
+@fun.child
 @lightbulb.command('strange-insults',
                    'Make ToastBot reply with a somewhat strange insult')
-@lightbulb.implements(lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def strangeinsult(ctx):
     my_file = open("strangeinsults.txt", "r",encoding="utf-8")
     content_list = my_file.readlines()
