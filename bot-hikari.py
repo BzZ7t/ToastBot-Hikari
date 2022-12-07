@@ -12,8 +12,15 @@ bot = lightbulb.BotApp(token=TOKEN)
 
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
-    print("ToastBot has successfully started!\nIf you have unauthorised access to this bot, fuck you! <<<333")
-     
+    print('''
+████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗
+╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝
+░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░
+░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░
+░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░
+░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░
+''')
+    
 #@bot.listen(hikari.GuildJoinEvent)#--------> When a user joins [UNFINISHED]
 #async def memberjoin(event):
 #    await event.respond("test")
