@@ -19,6 +19,12 @@ async def startup(event):
 #    await event.respond("test")
 
 #/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/-----> all cmds
+@bot.command#-------------------> /[Exapmple]
+@lightbulb.command('example',
+                   'this is just an example of for /commands')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def example(ctx):
+
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
                    'Says "pong!"')
@@ -46,13 +52,22 @@ async def timehere(ctx):
 async def fun(ctx):
     pass
 
-@fun.child
-@lightbulb.command('strange-insults',
-                   'Make ToastBot reply with a somewhat strange insult')
+@fun.child#----------------------------> /fun example
+@lightbulb.command('example',
+                   'example description')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def strangeinsult(ctx):
+async def groupexample(ctx):
+    print("This is just and example template for the /fun command group")
+
+@fun.child#----------------------------> /fun toast-insults
+@lightbulb.command('toast-insults',
+                   'Make ToastBot reply with a toast-related insult')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def toastinsult(ctx):
     my_file = open("strangeinsults.txt", "r",encoding="utf-8")
     content_list = my_file.readlines()
     await ctx.respond(str(content_list[random.randint(0,len(content_list)-1)]))
 
+
+    
 bot.run()
