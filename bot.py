@@ -1,9 +1,7 @@
 #/#/#/#/#/#/#/#/# ------> Imports
 import os
-import random
 import time
 
-#TODO: fix the pylance importing error
 import hikari
 import lightbulb
 from dotenv import load_dotenv
@@ -13,16 +11,18 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = lightbulb.BotApp(token=TOKEN)
 
+
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
-    print('''
+    print('''                                   
+                                                                                                     
             🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
             🍞🍞╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝🍞🍞
             🍞🍞░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░🍞🍞
             🍞🍞░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░🍞🍞
             🍞🍞░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░🍞🍞
             🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
-''')
+                                                                                        ''')
     
 #@bot.listen(hikari.GuildJoinEvent)#--------> When a user joins [UNFINISHED]
 #async def memberjoin(event):
@@ -48,30 +48,6 @@ async def timehere(ctx):
     await ctx.respond("The current time in the UK is: "+current_time)
     if int(current_time_hour) >= 12 and current_time_aftrm == "PM":
         await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
-#============================================> /fun
-@bot.command
-@lightbulb.command("fun",
-                   "Do all the **fun** stuff :D")
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def fun(ctx):
-    pass
 
-@fun.child#----------------------------> /fun example
-@lightbulb.command('example',
-                   'example description')
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def groupexample(ctx):
-    print("This is just and example template for the /fun command group")
-
-@fun.child#----------------------------> /fun toast-insults
-@lightbulb.command('toast-insults',
-                   'Make ToastBot reply with a toast-related insult')
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def toastinsult(ctx):
-    my_file = open("strangeinsults.txt", "r",encoding="utf-8")
-    content_list = my_file.readlines()
-    await ctx.respond(str(content_list[random.randint(0,len(content_list)-1)]))
-
-
-    
+bot.load_extensions_from("./plugins")
 bot.run()
