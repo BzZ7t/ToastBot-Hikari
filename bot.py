@@ -1,7 +1,9 @@
+#---------------> Imports
 import os
 import random
 import time
 
+#TODO: fix the pylance importing error
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -28,11 +30,23 @@ async def on_ready():
         print(f"Synced {len(synced)} command(s)")
     except Exception as e:
         print(e)
+
+
+#--------------------> Loading and unloading cogs     
+@bot.tree.command()
+async def load(ctx, extension):
+    bot.load_extension(f"cogs.{extension}")
+    
+@bot.tree.command()
+async def unload(ctx, extension):
+    bot.unload_extension(f"cogs.{extension}")
+    
+for filename in os.listdir("./cogs"):
+    if filename.endswith(".py"):
+        bot.load_extension(f"cogs.{filename[:-3]}")
+####################################################
         
-@bot.tree.command(name="ping", 
-                  description = 'Says "Pong!" with the amount of time(ms) it took!')
-async def ping(Interaction: discord.Interaction):
-    await Interaction.response.send_message(f"Pong!\nThat took `{round(bot.latency * 1000)}ms` for me to respond!")
+
     
 @bot.tree.command(name="toast-insults", 
                   description = 'Make ToastBot reply with a toast-related insult')
