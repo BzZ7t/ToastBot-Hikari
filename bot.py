@@ -3,6 +3,7 @@ import os
 import random
 import time
 
+#TODO: fix the pylance importing error
 import hikari
 import lightbulb
 from dotenv import load_dotenv
