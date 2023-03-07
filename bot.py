@@ -7,7 +7,7 @@ import lightbulb
 from dotenv import load_dotenv
 
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("TOASTBOT")
 
 bot = lightbulb.BotApp(token=TOKEN)
 
@@ -24,11 +24,7 @@ async def startup(event):
             🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
                                                                                         ''')
     
-#@bot.listen(hikari.GuildJoinEvent)#--------> When a user joins [UNFINISHED]
-#async def memberjoin(event):
-#    await event.respond("test")
 
-#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/-----> all cmds
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
                    'Says "pong!"')
