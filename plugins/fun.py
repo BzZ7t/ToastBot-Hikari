@@ -21,15 +21,8 @@ async def fun(ctx):
                    'Make ToastBot reply with a toast-related insult')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def toastinsult(ctx):
-    insult = ["You're just burnt toast :|",
-                    "Eww, You crusty >~<",
-                    "There's waaay better Toast in the Toastor o-o",
-                    "I'm **GOLD** toast, you're burnt toast B3",
-                    "I'm toasted, I'm **GOATed**!\nAfter I'm done with you, you'll be burnt and roasted B3"]
+    insult = open("./assets/fun_toast-insults.txt", "r").read().split("\n")
     await ctx.respond(insult[random.randint(0,len(insult))])
-    
 
-    
 def load(bot):
     bot.add_plugin(plugin)
-    
