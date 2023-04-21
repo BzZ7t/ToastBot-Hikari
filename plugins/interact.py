@@ -25,7 +25,7 @@ async def interact(ctx):
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def violence(ctx):
     # TODO: User ID needed
-    user_ran = "[user_ran]"
+    user_ran = author.id
     user_hurt = ctx.options.user
 
     action = [f"{user_ran} decided to throw a stone at {user_hurt}",]
