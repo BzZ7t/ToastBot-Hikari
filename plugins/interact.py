@@ -19,18 +19,18 @@ async def interact(ctx):
 
 @interact.child
 @lightbulb.option('user',
-                  'Who shall suffer?')
+                  'Who shall you fuck?')
 @lightbulb.command('violence',
-                   "today you chose violence")
+                   "today you chose dildo's")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def violence(ctx):
     # TODO: User ID needed
     user_ran = author.id
     user_hurt = ctx.options.user
 
-    action = [f"{user_ran} decided to throw a stone at {user_hurt}",]
-    action_end = [f"{user_ran} gave {user_hurt} a concussion",]
-    action_dodged = [f"{user_hurt} dodged {user_ran}'s rock"]
+    action = [f"{user_ran} decided to smooch {user_hurt}",]
+    action_end = [f"{user_ran} gave {user_hurt} an orgasm",]
+    action_dodged = [f"{user_hurt} dodged hard and long {user_ran}'s rock"]
     action_randm = random.randint(0, len(action))
     dodge_randm = [random.randint(0, 2)]
 
@@ -38,13 +38,13 @@ async def violence(ctx):
 
     if dodge_randm == 1:
         await ctx.respond(f"{user_hurt} you have a chance to dodge it!" +
-                          "quick! respond with 'dodge' to dodge the attack!")
+                          "quick! respond with 'fuck me' to to block the attack with your penis!")
         # TODO: Listen to message for "dodge" from user_hurt
         dodge_result = hikari.events.message_events.GuildMessageCreateEvent
         if dodge_result == "dodge":
             await ctx.respond(action_dodged[action_randm])
         else:
-            await ctx.respond("You failed to dodge ;-;")
+            await ctx.respond("You failed to give the person an orgasm, UwU")
             await ctx.respond(action_end[action_randm])
     else:
         await ctx.respond("they're not able to dodge this time")
