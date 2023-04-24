@@ -128,5 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-###
+#added by me, Zed c:
 .vscode/
+test.py
