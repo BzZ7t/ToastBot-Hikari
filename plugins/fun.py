@@ -21,7 +21,7 @@ async def fun(ctx):
                    'Make ToastBot reply with a toast-related insult')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def toastinsult(ctx):
-    insult = open("./plugins/assets/fun/fun_toast-insults.txt", "r").read().split("\n")
+    insult = open("./plugins/assets/fun/toast-insults.txt", "r").read().split("\n")
     await ctx.respond(insult[random.randint(0,len(insult))])
 
 def load(bot):
