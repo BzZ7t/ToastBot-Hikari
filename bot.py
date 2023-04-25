@@ -12,6 +12,7 @@ load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 
 bot = lightbulb.BotApp(token=TOKEN)
+miru.install(bot)
 
 
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
