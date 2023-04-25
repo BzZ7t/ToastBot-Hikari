@@ -85,7 +85,9 @@ async def violence(ctx):
 async def hug(ctx):
     user_ran = f"<@{ctx.author.id}>"
     user_interact = ctx.options.user
-    hug_list = open("./plugins/assets/interact/hug_list.txt", "r").read().split("\n")
+    #TODO: File open when fstring found: open("./plugins/assets/interact/hug_list.txt", "r").read().split("\n")
+    hug_list = [f"{user_ran} test1 for {user_interact}",
+              f"{user_ran} test2 for {user_interact}"]
     hug_list_gif = open("./plugins/assets/interact/hug_list_gif.txt", "r").read().split("\n")
     
     if ctx.options.gif == "y" or ctx.options.gif.lower() == "yes":
