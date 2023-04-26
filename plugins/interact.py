@@ -23,7 +23,7 @@ async def interact(ctx):
 @lightbulb.option('user',
                   'Who shall suffer?')
 @lightbulb.command('violence',
-                   "today you chose violence")
+                   "commit an act of violence to another user >:}")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def violence(ctx):
     user_ran = f"<@{ctx.author.id}>"
