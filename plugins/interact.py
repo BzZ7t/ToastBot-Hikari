@@ -7,7 +7,9 @@ import lightbulb
 import miru
 
 plugin = lightbulb.Plugin("interact")
-        
+
+
+a = 0
 # ----> '/interact' setup, note that the decription is not being used here, despite being added
 @plugin.command
 @lightbulb.command("interact",
@@ -15,7 +17,6 @@ plugin = lightbulb.Plugin("interact")
 @lightbulb.implements(lightbulb.SlashCommandGroup)
 async def interact(ctx):
     pass
-
 
 #---------------------------------> /interact violence user:
 @interact.child
@@ -33,35 +34,45 @@ async def violence(ctx):
     action_randm = random.randint(0, len(action)-1)
     dodge_randm = [random.randint(0, 2)]
     dodge_randm = 1
-
-    await ctx.respond(action[action_randm])
-
-    if dodge_randm == 1:
-        class dodge_button(miru.view): #TODO: Fix this goddamn button: TypeError: module() takes at most 2 arguments (3 given)
-            @miru.button(label='dodge', style=hikari.ButtonStyle.PRIMARY)
-            async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
-                t1_start = time.perf_counter()
-                async def dodge_get():
-                    active= True
-                    while active:
-                        print(time.perf_counter()-t1_start)
-                        if (time.perf_counter() - t1_start) >= 5:
-                            if dodge_result.lower() == "dodge":
-                                active = False
-                                return True
-                            else:
-                                active = False
-                                return False
-                        else:
-                            dodge_result = "null" 
-                dodge_result = await dodge_get()
-                if dodge_result == True:
-                    await ctx.respond(action_dodged[action_randm])
-                else:
+    global ddg
+    ddg = False
+    
+    #TODO: Fix this goddamn button: TypeError: module() takes at most 2 arguments (3 given)
+    async def dodge_btn_timr():
+            view.start(message)
+            active= True
+            while active:
+            
+                print(time.perf_counter()-t1_start)
+                print(ddg)
+                if (time.perf_counter() - t1_start) >= 3:
+                    active = False
                     await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
                     await ctx.respond(action_end[action_randm])
-        dodge_button(timeout=5).start(await ctx.respond(f"{user_interact} you have a chance to dodge it!\n" +
-                                "quick! respond with `/interact dodge to dodge` the attack!", components=miru.View.build()))
+                elif ddg == True:
+                    active = False
+                    
+    
+    class dodge_button(miru.View): 
+            @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
+            async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
+                await ctx.respond(action_dodged[action_randm])
+                ddg = True
+                return ddg
+                
+                
+                
+    await ctx.respond(action[action_randm])
+    
+    if dodge_randm == 1:
+        view = dodge_button(timeout=4)
+        message = await ctx.respond(f"{user_interact} you have a chance to dodge it!\n" +
+                    "quick! respond with `/interact dodge to dodge` the attack!", components=view.build())
+        
+        t1_start = time.perf_counter()
+        await dodge_btn_timr() 
+            
+        
         
     else:
         await ctx.respond("they're not able to dodge this time")
