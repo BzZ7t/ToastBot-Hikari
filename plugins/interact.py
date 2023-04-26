@@ -37,12 +37,11 @@ async def violence(ctx):
     global ddg
     ddg = False
     
-    #TODO: Fix this goddamn button: TypeError: module() takes at most 2 arguments (3 given)
     async def dodge_btn_timr():
-            view.start(message)
+            
             active= True
             while active:
-            
+                ddg = view.start(message)
                 print(time.perf_counter()-t1_start)
                 print(ddg)
                 if (time.perf_counter() - t1_start) >= 3:
@@ -52,20 +51,20 @@ async def violence(ctx):
                 elif ddg == True:
                     active = False
                     
-    
-    class dodge_button(miru.View): 
+    #TODO: Fix this goddamn button: wont return ddg = True
+
+    class dodge_btn(miru.View): 
             @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
             async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
                 await ctx.respond(action_dodged[action_randm])
-                ddg = True
-                return ddg
+                return True
                 
                 
                 
     await ctx.respond(action[action_randm])
     
     if dodge_randm == 1:
-        view = dodge_button(timeout=4)
+        view = dodge_btn(timeout=4)
         message = await ctx.respond(f"{user_interact} you have a chance to dodge it!\n" +
                     "quick! respond with `/interact dodge to dodge` the attack!", components=view.build())
         
