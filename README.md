@@ -1,5 +1,5 @@
 # ToastBot-Hikari
-An all-purpose bot for discord
+An all-purpose bot for discord made in Python with Hikari!
 
 # Current Commands
 ```
