@@ -47,6 +47,13 @@ async def timehere(ctx):
     await ctx.respond("The current time in the UK is: "+current_time)
     if int(current_time_hour) >= 12 and current_time_aftrm == "PM":
         await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
+        
+@bot.command
+@lightbulb.command("donate",
+                   "Get my creator's Ko-Fi page!")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def donate(ctx):
+    await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t")
 
 bot.load_extensions_from("./plugins")
 bot.run()
