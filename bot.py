@@ -54,8 +54,9 @@ async def timehere(ctx):
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
+    helptxt = open("./README.md", "r") #TODO: Use this if possible
     await ctx.respond(
-        '''Current Commands
+'''Current Commands
 ```
 /fun: Do all the **fun** stuff :D
 ---> toast-insults: Make ToastBot reply with a toast-related insult
@@ -68,8 +69,8 @@ async def help(ctx):
 
 /help: Get a list of all commands
 /donate: Get my creator's Ko-Fi page!
-```'''
-    )
+```''')
+        
 
 @bot.command
 @lightbulb.command("donate",
