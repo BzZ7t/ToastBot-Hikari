@@ -11,6 +11,8 @@ An all-purpose bot for discord made in Python with Hikari!
 ---> violence: commit an act of violence to another user >:}
 ---> hug: give another user a hug!
 ---> boop: boop another user
+
+/donate: Get my creator's Ko-Fi page!
 ```
 
 
