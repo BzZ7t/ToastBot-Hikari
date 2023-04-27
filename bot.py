@@ -35,7 +35,7 @@ async def startup(event):
 async def ping(ctx):
     await ctx.respond("Pong!")
 
-# Unsure wether of not to remove this as it serves no purpose in its current state
+#TODO Unsure wether of not to remove this as it serves no purpose in its current state
 @bot.command#----------------> /time
 @lightbulb.command("get-time",
                    "Says the current time")
