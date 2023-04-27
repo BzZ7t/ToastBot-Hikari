@@ -55,6 +55,7 @@ async def timehere(ctx):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
     helptxt = open("./README.md", "r") #TODO: Use this if possible
+    print(helptxt)
     await ctx.respond(
 '''Current Commands
 ```
