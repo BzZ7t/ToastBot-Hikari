@@ -11,6 +11,22 @@ plugin = lightbulb.Plugin("interact")
 #---> Common Varibles 
 
 #---> Common Functions
+#TODO: UserFunc for simple commands with a gif #####################################################################################
+async def simple_action(ctx):
+    user_ran = f"<@{ctx.author.id}>"
+    user_interact = ctx.options.user
+    
+    #TODO: File open when fstring found: open("./plugins/assets/interact/hug_list.txt", "r").read().split("\n")
+    boop_list = [f"{user_ran} test1 for {user_interact}",
+              f"{user_ran} test2 for {user_interact}"]
+    boop_list_gif = open("./plugins/assets/interact/boop_list_gif.txt", "r").read().split("\n")
+    
+    if ctx.options.gif == "y" or ctx.options.gif.lower() == "yes":
+        await ctx.respond(f"{boop_list[random.randint(0,len(boop_list))]} \n {boop_list_gif[random.randint(0,len(boop_list_gif))]}")
+    else:
+        await ctx.respond({boop_list[random.randint(0,len(boop_list))]})
+#####################################################################################################################################
+
 
 # ----> '/interact' setup, note that the decription is not being used here, despite being added
 @plugin.command
@@ -36,7 +52,6 @@ async def violence(ctx):
     action_randm = random.randint(0, len(action)-1)
     dodge_randm = [random.randint(0, 2)]
     dodge_randm = 1
-    global ddg
     ddg = False
     
     async def dodge_btn_timr():
