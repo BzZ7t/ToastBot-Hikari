@@ -8,14 +8,16 @@ import miru
 
 plugin = lightbulb.Plugin("interact")
 
+#---> Common Varibles 
 
-a = 0
+#---> Common Functions
+
 # ----> '/interact' setup, note that the decription is not being used here, despite being added
 @plugin.command
 @lightbulb.command("interact",
                    "interact with other users!")
 @lightbulb.implements(lightbulb.SlashCommandGroup)
-async def interact(ctx):
+async def interact():
     pass
 
 #---------------------------------> /interact violence user:
@@ -38,18 +40,17 @@ async def violence(ctx):
     ddg = False
     
     async def dodge_btn_timr():
-            
-            active= True
-            while active:
-                ddg = view.start(message)
-                print(time.perf_counter()-t1_start)
-                print(ddg)
-                if (time.perf_counter() - t1_start) >= 3:
-                    active = False
-                    await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
-                    await ctx.respond(action_end[action_randm])
-                elif ddg == True:
-                    active = False
+        active= True
+        while active:
+            ddg = view.start(message)
+            print(time.perf_counter()-t1_start)
+            print(ddg)
+            if (time.perf_counter() - t1_start) >= 3:
+                active = False
+                await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
+                await ctx.respond(action_end[action_randm])
+            elif ddg == True:
+                active = False
                     
     #TODO: Fix this goddamn button: wont return ddg = True
 
@@ -84,6 +85,7 @@ async def violence(ctx):
         time.sleep(1)
         await ctx.respond(action_end[action_randm])
 
+#---------------------------------> /interact hug 
 @interact.child
 @lightbulb.option('gif',
                   "add a gif to the message? ('Yes/No' or 'y/n')")
@@ -104,6 +106,28 @@ async def hug(ctx):
         await ctx.respond(f"{hug_list[random.randint(0,len(hug_list))]} \n {hug_list_gif[random.randint(0,len(hug_list_gif))]}")
     else:
         await ctx.respond({hug_list[random.randint(0,len(hug_list))]})
+        
+@interact.child
+@lightbulb.option('gif',
+                  "add a gif to the message? ('Yes/No' or 'y/n')")
+@lightbulb.option('user',
+                  'Who would you like to boop?')
+@lightbulb.command('boop',
+                   'boop another user.')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def hug(ctx):
+    user_ran = f"<@{ctx.author.id}>"
+    user_interact = ctx.options.user
+    #TODO: File open when fstring found: open("./plugins/assets/interact/hug_list.txt", "r").read().split("\n")
+    boop_list = [f"{user_ran} test1 for {user_interact}",
+              f"{user_ran} test2 for {user_interact}"]
+    boop_list_gif = open("./plugins/assets/interact/boop_list_gif.txt", "r").read().split("\n")
+    
+    if ctx.options.gif == "y" or ctx.options.gif.lower() == "yes":
+        await ctx.respond(f"{boop_list[random.randint(0,len(boop_list))]} \n {boop_list_gif[random.randint(0,len(boop_list_gif))]}")
+    else:
+        await ctx.respond({boop_list[random.randint(0,len(boop_list))]})
+        
 
 def load(bot):
     bot.add_plugin(plugin)
