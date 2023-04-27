@@ -5,6 +5,7 @@ An all-purpose bot for discord made in Python with Hikari!
 ```
 /fun: Do all the **fun** stuff :D
 ---> toast-insults: Make ToastBot reply with a toast-related insult
+---> roll: Roll a dice
 
 /interact: interact with other users!
 ---> violence: commit an act of violence to another user >:}
