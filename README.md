@@ -12,6 +12,7 @@ An all-purpose bot for discord made in Python with Hikari!
 ---> hug: give another user a hug!
 ---> boop: boop another user
 
+/help: Get a list of all commands
 /donate: Get my creator's Ko-Fi page!
 ```
 

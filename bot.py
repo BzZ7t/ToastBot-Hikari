@@ -50,6 +50,28 @@ async def timehere(ctx):
         await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
         
 @bot.command
+@lightbulb.command('help',
+                   'Get a list of all commands')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def help(ctx):
+    await ctx.respond(
+        '''Current Commands
+```
+/fun: Do all the **fun** stuff :D
+---> toast-insults: Make ToastBot reply with a toast-related insult
+---> roll: Roll a dice
+
+/interact: interact with other users!
+---> violence: commit an act of violence to another user >:}
+---> hug: give another user a hug!
+---> boop: boop another user
+
+/help: Get a list of all commands
+/donate: Get my creator's Ko-Fi page!
+```'''
+    )
+
+@bot.command
 @lightbulb.command("donate",
                    "Get my creator's Ko-Fi page!")
 @lightbulb.implements(lightbulb.SlashCommand)
