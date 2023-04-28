@@ -7,7 +7,7 @@ import hikari
 import lightbulb
 import miru
 from dotenv import load_dotenv
-
+print("Fix your code")
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 
