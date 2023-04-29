@@ -54,7 +54,11 @@ async def violence(ctx):
     dodge_randm = 1
     ddg = False
     
-    async def dodge_btn_timr():
+    @plugin.listen(hikari.GuildMessageCreateEvent)
+        async def btn_listen(event: hikari.GuildMessageCreateEvent):
+            pass
+    
+    async def dodge_btn_timr(event: hikari.GuildMessageCreateEvent):
         active= True
         while active:
             ddg = view.start(message)
@@ -64,7 +68,7 @@ async def violence(ctx):
                 active = False
                 await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
                 await ctx.respond(action_end[action_randm])
-            elif ddg == True:
+            elif event.context == action_dodged[action_randm]:
                 active = False
                     
     #TODO: Fix this goddamn button: wont return ddg = True
