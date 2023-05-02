@@ -53,10 +53,20 @@ async def violence(ctx):
     dodge_randm = [random.randint(0, 2)]
     dodge_randm = 1
     
-
-        
-                                    
-    #TODO: Fix this goddamn button: wont return
+    async def dodge_btn_timr():
+        active= True
+        while active:
+            ddg = view.start(message)
+            print(time.perf_counter()-t1_start)
+            print(ddg)
+            if (time.perf_counter() - t1_start) >= 3:
+                active = False
+                await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
+                await ctx.respond(action_end[action_randm])
+            elif ddg == True:
+                active = False
+                    
+    #TODO: Fix this goddamn button: wont return ddg = True
 
     class dodge_btn(miru.View): 
             @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
