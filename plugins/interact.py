@@ -72,8 +72,7 @@ async def violence(ctx):
             @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
             async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
                 await ctx.respond(action_dodged[action_randm])
-                global active
-                active = False
+                
                 
                 
                 
