@@ -1,0 +1,7 @@
+This is a simple Todo list of all the fearures I wanna work on
+
+Finish /interact violence
+start a /fun diceroll and /fun coinflip
+
+Don't forget the individual TODO's in code
+and dont be a YandereDev
