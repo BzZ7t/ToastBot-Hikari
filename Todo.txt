@@ -1,7 +1,8 @@
 This is a simple Todo list of all the fearures I wanna work on
 
-Finish /interact violence
-start a /fun diceroll and /fun coinflip
+• Finish /interact violence
+• start a /fun diceroll and /fun coinflip
+• /toaster would be cool, imagine all the things users could find
 
 Don't forget the individual TODO's in code
 and dont be a YandereDev
