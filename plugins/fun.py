@@ -37,13 +37,13 @@ async def roll(ctx):
     
     try:
         high_no = int(high_no)
-        await ctx.respond(""You rolled a")
+        await ctx.respond("You rolled a")
         await asyncio.sleep(0.5)
-        await ctx.edit_last_response(""You rolled a.")
+        await ctx.edit_last_response("You rolled a.")
         await asyncio.sleep(0.5)
-        await ctx.edit_last_response(""You rolled a..")
+        await ctx.edit_last_response("You rolled a..")
         await asyncio.sleep(0.5)
-        await ctx.edit_last_response(""You rolled a...")
+        await ctx.edit_last_response("You rolled a...")
         await asyncio.sleep(1)
         await ctx.edit_last_response(f"You rolled a **{random.randint(1, high_no)}**!")
     except:
