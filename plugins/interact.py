@@ -9,7 +9,8 @@ import miru
 plugin = lightbulb.Plugin("interact")
 
 #---> Common Varibles 
-
+global ddg
+dgg = False
 #---> Common Functions
 #TODO: UserFunc for simple commands with a gif #####################################################################################
 async def simple_action(ctx):
@@ -53,42 +54,33 @@ async def violence(ctx):
     dodge_randm = [random.randint(0, 2)]
     dodge_randm = 1
     
-    async def dodge_btn_timr():
-        active= True
-        while active:
-            ddg = view.start(message)
-            print(time.perf_counter()-t1_start)
-            print(ddg)
-            if (time.perf_counter() - t1_start) >= 3:
-                active = False
-                await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
-                await ctx.respond(action_end[action_randm])
-            elif ddg == True:
-                active = False
                     
     #TODO: Fix this goddamn button: wont return ddg = True
 
     class dodge_btn(miru.View): 
             @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
             async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
+                global ddg
+                ddg = True
                 await ctx.respond(action_dodged[action_randm])
                 
                 
                 
                 
     await ctx.respond(action[action_randm])
-    
     if dodge_randm == 1:
         view = dodge_btn(timeout=4)
         message = await ctx.respond(f"{user_interact} you have a chance to dodge it!\n" +
                     "quick! press the button below to dodge the attack!", components=view.build())
         
         t1_start = time.perf_counter()
-        active= True
-        active = await view.start(message)
+        active = True
+        view.start(message)
         while active:
             print(time.perf_counter()-t1_start)
-            if (time.perf_counter() - t1_start) >= 3:
+            if ddg == True:
+                active = False
+            elif (time.perf_counter() - t1_start) >= 3:
                 active = False
                 await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
                 await ctx.respond(action_end[action_randm])
@@ -97,13 +89,13 @@ async def violence(ctx):
         
     else:
         await ctx.respond("they're not able to dodge this time")
-        time.sleep(0.5)
+        asyncio.sleep(0.5)
         await ctx.edit_last_response("they're not able to dodge this time.")
-        time.sleep(0.5)
+        asyncio.sleep(0.5)
         await ctx.edit_last_response("they're not able to dodge this time..")
-        time.sleep(0.5)
+        asyncio.sleep(0.5)
         await ctx.edit_last_response("they're not able to dodge this time...")
-        time.sleep(1)
+        asyncio.sleep(1)
         await ctx.respond(action_end[action_randm])
 
 #---------------------------------> /interact hug 
