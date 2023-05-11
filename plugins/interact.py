@@ -9,7 +9,6 @@ import miru
 plugin = lightbulb.Plugin("interact")
 
 #---> Common Varibles 
-global ddg
 dgg = False
 #---> Common Functions
 #TODO: UserFunc for simple commands with a gif #####################################################################################

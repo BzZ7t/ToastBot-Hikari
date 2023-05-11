@@ -31,10 +31,10 @@ async def startup(event):
 
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
-                   'Says "pong!"')
+                   'Says "pong!" followed by bot latency')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(ctx):
-    await ctx.respond("Pong!")
+    await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
 #TODO Unsure wether of not to remove this as it serves no purpose in its current state
 @bot.command#----------------> /time
