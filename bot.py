@@ -58,7 +58,7 @@ async def help(ctx):
     helptxt = open("./README.md", "r") #TODO: Use this if possible
     print(helptxt)
     await ctx.respond(
-'''Current Commands
+'''# Current Commands
 ```
 /fun: Do all the **fun** stuff :D
 ---> toast-insults: Make ToastBot reply with a toast-related insult
