@@ -28,9 +28,9 @@ async def toastinsult(ctx):
     
 @fun.child 
 @lightbulb.option('number',
-                  'whats the highest number the dice could roll?')
+                  'whats the highest number the dice could roll?', required=False, default=6)
 @lightbulb.command('diceroll',
-                   'Roll a dice')
+                   'Roll a dice (default is 6)')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def roll(ctx):
     high_no = ctx.options.number
@@ -38,11 +38,11 @@ async def roll(ctx):
     try:
         high_no = int(high_no)
         await ctx.respond("You rolled a")
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.25)
         await ctx.edit_last_response("You rolled a.")
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.25)
         await ctx.edit_last_response("You rolled a..")
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.25)
         await ctx.edit_last_response("You rolled a...")
         await asyncio.sleep(1)
         await ctx.edit_last_response(f"You rolled a **{random.randint(1, high_no)}**!")
@@ -58,24 +58,34 @@ async def roll(ctx):
         await ctx.delete_last_response()
         
 @fun.child
+@lightbulb.option('guess',
+                  'Guess if its heads or tails!', required=False, default='None',
+                  choices=[hikari.CommandChoice(name='Heads', value='Heads'),hikari.CommandChoice(name='Tails', value='Tails')])
 @lightbulb.command('coinflip',
                    'flip a 50/50 coin!')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def coinflip(ctx):
     coin_result = 'Tails'
+    guess = ctx.options.guess
     
     if random.randint(0,1) == 1:
         coin_result = 'Heads'
     
     await ctx.respond('The coin landed on')
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.25)
     await ctx.edit_last_response('The coin landed on.')
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.25)
     await ctx.edit_last_response('The coin landed on..')
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(0.25)
     await ctx.edit_last_response('The coin landed on...')
     await asyncio.sleep(1)
     await ctx.edit_last_response(f'The coin landed on {coin_result}!')
+    
+    if guess != 'None':
+        if guess == coin_result:
+            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed correctly! ({guess})')
+        else:
+            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed incorrectly ({guess})')
 
 
 

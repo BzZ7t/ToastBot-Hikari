@@ -16,7 +16,7 @@ async def mod(ctx):
 @lightbulb.add_cooldown(3.0, 1, lightbulb.GuildBucket)
 #@lightbulb.add_checks()
 @lightbulb.option("reason",
-                  " (Optional) What is the reason for ban?")
+                  " (Optional) What is the reason for ban?", required=False, default='No reason given')
 @lightbulb.option("user",
                   "Who is the user you would like to ban?")
 @lightbulb.command('ban',
