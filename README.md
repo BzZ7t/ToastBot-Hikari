@@ -3,6 +3,10 @@ An all-purpose bot for discord made in Python with Hikari!
 
 # Current Commands
 ```
+/mod:
+---> kick: kick a member from the server
+---> ban: ban a member from the server
+
 /fun: Do all the **fun** stuff :D
 ---> toast-insults: Make ToastBot reply with a toast-related insult
 ---> roll: Roll a dice

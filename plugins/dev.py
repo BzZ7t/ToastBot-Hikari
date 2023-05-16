@@ -79,7 +79,7 @@ async def violence(ctx):
             elif (time.perf_counter() - t1_start) >= 3:
                 active = False
                 await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
-                await ctx.respond(action_end[action_randm])
+                await ctx.respond(action_end[action_randm], user_mentions=True)
             
         
         

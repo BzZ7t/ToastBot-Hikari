@@ -1,6 +1,11 @@
 #-------------> Imports
+import asyncio
+import random
+import time
+
 import hikari
 import lightbulb
+import miru
 
 plugin = lightbulb.Plugin("mod")
 
@@ -14,25 +19,51 @@ async def mod(ctx):
 
 @mod.child
 @lightbulb.add_cooldown(3.0, 1, lightbulb.GuildBucket)
-#@lightbulb.add_checks()
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.BAN_MEMBERS),
+                      lightbulb.bot_has_guild_permissions(hikari.Permissions.BAN_MEMBERS))
 @lightbulb.option("reason",
-                  " (Optional) What is the reason for ban?", required=False, default='No reason given')
+                  "What is the reason for ban?", required=False,
+                  default='No reason given')
 @lightbulb.option("user",
-                  "Who is the user you would like to ban?")
+                  "Who is the user you would like to ban?",
+                  required=True)
 @lightbulb.command('ban',
                    'ban a member from the server')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def ban(ctx):
-    #TODO: make responses empheral and add permission checks ffs..
-    server = ctx.get_guild() #TODO: fix user_id: - Value "<@USERID>" is not snowflake.
-    ban_reason = ctx.options.reason
+    server = ctx.get_guild() 
+    reason = ctx.options.reason
     remove_chara = ["<","@",">"]
     user_interact = ctx.options.user
     
     for x in remove_chara:
         user_interact = str.replace(user_interact,x, "")
-    await server.ban(user_interact, reason=ban_reason)
-    await ctx.respond(f"{ctx.options.user} was succesfully banned with reason:\n`{ban_reason}`", '''ephemeral = True''')
+    await server.ban(user_interact, reason=reason)
+    await ctx.respond(f"{ctx.options.user} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
+    
+@mod.child
+@lightbulb.add_cooldown(3.0, 1, lightbulb.GuildBucket)
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.KICK_MEMBERS),
+                      lightbulb.bot_has_guild_permissions(hikari.Permissions.KICK_MEMBERS))
+@lightbulb.option("reason",
+                  "What is the reason for kick?", required=False,
+                  default='No reason given')
+@lightbulb.option("user",
+                  "Who is the user you would like to kick?",
+                  required=True)
+@lightbulb.command('kick',
+                   'kick a member from the server')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def kick(ctx):
+    server = ctx.get_guild()
+    reason = ctx.options.reason
+    remove_chara = ["<","@",">"]
+    user_interact = ctx.options.user
+    
+    for x in remove_chara:
+        user_interact = str.replace(user_interact,x, "")
+    await server.kick(user_interact, reason=reason)
+    await ctx.respond(f"{ctx.options.user} was succesfully kicked with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
     
     

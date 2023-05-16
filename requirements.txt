@@ -1,4 +1,4 @@
-hikari==2.0.0.dev118
+hikari==2.0.0.dev119
 hikari_lightbulb==2.3.3
 hikari_miru==3.1.1
 python-dotenv==1.0.0
