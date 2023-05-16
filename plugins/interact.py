@@ -11,7 +11,8 @@ plugin = lightbulb.Plugin("interact")
 #---> Common Varibles 
 dgg = False
 #---> Common Functions
-#TODO: UserFunc for simple commands with a gif #####################################################################################
+
+#---------------------------> function for simple user interactions based on list file and gif list files 
 async def simple_interaction(ctx, interaction):
     user_ran = f"<@{ctx.author.id}>"
     user_interact = ctx.options.user
@@ -24,7 +25,6 @@ async def simple_interaction(ctx, interaction):
                           user_mentions=True)
     else:
         await ctx.respond({list[random.randint(0,len(list))]})
-#####################################################################################################################################
 
 
 # ----> '/interact' setup, note that the decription is not being used here, despite being added
@@ -66,65 +66,6 @@ async def boop(ctx):
         
 #-----------> More complex interactions,
 #---------------------------------> /interact violence user:
-@interact.child
-@lightbulb.option('user',
-                  'Who shall suffer?', required=True)
-@lightbulb.command('violence',
-                   "commit an act of violence to another user >:}")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def violence(ctx):
-    user_ran = f"<@{ctx.author.id}>"
-    user_interact = ctx.options.user
-    action = [f"{user_ran} decided to throw a stone at {user_interact}"]
-    action_end = [f"{user_ran} gave {user_interact} a concussion"]
-    action_dodged = [f"{user_interact} dodged {user_ran}'s rock"]
-    action_randm = random.randint(0, len(action)-1)
-    dodge_randm = [random.randint(0, 2)]
-    dodge_randm = 1
-    
-                    
-    #TODO: Fix this goddamn button
-
-    class dodge_btn(miru.View): 
-            @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
-            async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
-                global ddg
-                ddg = True
-                await ctx.respond(action_dodged[action_randm],user_mentions=True)
-                
-                
-                
-                
-    await ctx.respond(action[action_randm])
-    if dodge_randm == 1:
-        view = dodge_btn(timeout=4)
-        message = await ctx.respond(f"{user_interact} you have a chance to dodge it!\n" +
-                    "quick! press the button below to dodge the attack!", components=view.build(), user_mentions=True)
-        
-        t1_start = time.perf_counter()
-        active = True
-        view.start(message)
-        while active:
-            print(time.perf_counter()-t1_start)
-            if ddg == True:
-                active = False
-            elif (time.perf_counter() - t1_start) >= 3:
-                active = False
-                await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
-                await ctx.respond(action_end[action_randm])
-            
-        
-        
-    else:
-        await ctx.respond("they're not able to dodge this time")
-        asyncio.sleep(0.5)
-        await ctx.edit_last_response("they're not able to dodge this time.")
-        asyncio.sleep(0.5)
-        await ctx.edit_last_response("they're not able to dodge this time..")
-        asyncio.sleep(0.5)
-        await ctx.edit_last_response("they're not able to dodge this time...")
-        asyncio.sleep(1)
-        await ctx.respond(action_end[action_randm], user_mentions=True)
 
 def load(bot):
     bot.add_plugin(plugin)
