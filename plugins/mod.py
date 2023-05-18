@@ -36,7 +36,7 @@ async def ban(ctx):
     remove_chara = ["<","@",">"]
     user_interact = ctx.options.user
     
-    for x in remove_chara:
+    for x in remove_chara: 
         user_interact = str.replace(user_interact,x, "")
     await server.ban(user_interact, reason=reason)
     await ctx.respond(f"{ctx.options.user} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
@@ -47,7 +47,7 @@ async def ban(ctx):
                       lightbulb.bot_has_guild_permissions(hikari.Permissions.KICK_MEMBERS))
 @lightbulb.option("reason",
                   "What is the reason for kick?", required=False,
-                  default='No reason given')
+                  default=f'No reason given')
 @lightbulb.option("user",
                   "Who is the user you would like to kick?",
                   required=True)
@@ -56,15 +56,14 @@ async def ban(ctx):
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def kick(ctx):
     server = ctx.get_guild()
-    reason = ctx.options.reason
+    reason = f"{ctx.options.reason}"
     remove_chara = ["<","@",">"]
     user_interact = ctx.options.user
     
-    for x in remove_chara:
+    for x in remove_chara: 
         user_interact = str.replace(user_interact,x, "")
     await server.kick(user_interact, reason=reason)
     await ctx.respond(f"{ctx.options.user} was succesfully kicked with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
-    
     
     
     

@@ -9,14 +9,12 @@ import miru
 plugin = lightbulb.Plugin("interact")
 
 #---> Common Varibles 
-dgg = False
+
 #---> Common Functions
 
-#---------------------------> function for simple user interactions based on list file and gif list files 
-async def simple_interaction(ctx, interaction):
+async def simple_interaction(ctx, interaction): #---------------------------> function for simple user interactions based on list file and gif list files 
     user_ran = f"<@{ctx.author.id}>"
     user_interact = ctx.options.user
-    #TODO: File open when fstring found: open("./plugins/assets/interact/hug_list.txt", "r").read().split("\n")
     list = open(f"./plugins/assets/interact/{interaction}_list.txt", "r").read().split("\n")
     list_gif = open(f"./plugins/assets/interact/{interaction}_list_gif.txt", "r").read().split("\n")
     
@@ -24,6 +22,7 @@ async def simple_interaction(ctx, interaction):
         await ctx.respond(f"{list[random.randint(0,len(list))]}\n{list_gif[random.randint(0,len(list_gif))]}".format(user_ran = user_ran, user_interact = user_interact),
                           user_mentions=True)
     else:
+        #TODO: Use Tenor API here
         await ctx.respond({list[random.randint(0,len(list))]})
 
 
