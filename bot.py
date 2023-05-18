@@ -81,5 +81,20 @@ async def help(ctx):
 async def donate(ctx):
     await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t")
 
+@bot.command
+@lightbulb.command("toaster",
+                   "Toast bread (not Toast) into Toast")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def toaster(ctx):
+    channel_id = ctx.message.channel_id
+    user_ran = f"<@{ctx.author.id}>"
+    toast_list = ["https://www.collinsdictionary.com/images/full/toast_102709511.jpg",
+                  ]
+    
+    await ctx.respond("Toasting bread... Please wait...")
+    await asyncio.sleep(3)
+    await ctx.respond(f"{user_ran}, Your Toast is ready!", user_mentions=True)
+    #await bot.rest.create_message(channel_id, content=toast_list[0]) #TODO: No workie, pls make seperate message without replying to last
+
 bot.load_extensions_from("./plugins")
 bot.run()

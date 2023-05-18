@@ -3,9 +3,11 @@ This is a simple Todo list of all the fearures I wanna work on
 • Finish /interact violence
 • /toaster would be cool, imagine all the things users could find
 • implement a ChatGPT type function
-•/quotes suggested by Kohvi<3
+• /quotes suggested by Kohvi<3
+• implement Tenor into /interact for gifs 
 
-
+April fools
+• Call everyone a furry
 
 Don't forget the individual TODO's in code
 and dont be a YandereDev

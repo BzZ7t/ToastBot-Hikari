@@ -41,6 +41,7 @@ async def ban(ctx):
     await server.ban(user_interact, reason=reason)
     await ctx.respond(f"{ctx.options.user} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
+
 @mod.child
 @lightbulb.add_cooldown(3.0, 1, lightbulb.GuildBucket)
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.KICK_MEMBERS),
