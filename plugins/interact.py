@@ -34,14 +34,16 @@ async def interact(ctx):
     interaction = ctx.options.interaction
     list = open(f"./plugins/assets/interact/{interaction}_list.txt", "r").read().split("\n")
     list_gif = open(f"./plugins/assets/interact/{interaction}_list_gif.txt", "r").read().split("\n")
-    
-    if ctx.options.gif == True:
-        await ctx.respond(f"{list[random.randint(0,len(list))]}\n{list_gif[random.randint(0,len(list_gif))]}".format(user_ran = user_ran, user_interact = user_interact),
-                          user_mentions=True)
-    else:
-        #TODO: Use Tenor API here
-        await ctx.respond(f"{list[random.randint(0,len(list))]}".format(user_ran = user_ran, user_interact = user_interact),
-                          user_mentions=True)
+    try:
+        if ctx.options.gif == True:
+            await ctx.respond(f"{list[random.randint(0,len(list))]}\n{list_gif[random.randint(0,len(list_gif))]}".format(user_ran = user_ran, user_interact = user_interact),
+                            user_mentions=True)
+        else:
+            #TODO: Use Tenor API here
+            await ctx.respond(f"{list[random.randint(0,len(list))]}".format(user_ran = user_ran, user_interact = user_interact),
+                            user_mentions=True)
+    except FileNotFoundError:
+        await ctx.respond(f"Command still being implemented,\nfile for `{interaction}` doesn't exist for me to interact")
 
 #-----------> More complex interactions,
 #---------------------------------> /interact violence user:

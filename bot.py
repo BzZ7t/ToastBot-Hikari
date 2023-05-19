@@ -107,14 +107,20 @@ async def toaster(ctx):
                   default="",
                   choices=[hikari.CommandChoice(name="Yes", value="/gif"),
                            hikari.CommandChoice(name="No", value="")])
-@lightbulb.command("cat",
+@lightbulb.command("cat-broken",
                    "get a random cat image from https://cataas.com/#/")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def cat(ctx):
+async def cat_broken(ctx):
     options = f"{ctx.options.gif}"
-    cat_image = f"https://cataas.com/cat{options}"
+    cat_url = f"https://cataas.com/cat{options}"
+
     
-    await ctx.respond(cat_image)
+    with Image.open(requests.get(cat_url, stream=True).raw) as im:
+        im.thumbnail((1024,1024))
+        im.save("temp_cat" + ".png", "PNG")
+    
+    await ctx.respond(hikari.File("temp_cat.png"))
+
 
 
 bot.load_extensions_from("./plugins")

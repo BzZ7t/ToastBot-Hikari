@@ -104,23 +104,7 @@ async def violence(ctx):
 #Tried storing the file in a variable first before sending but I have no fucking clue
 #how to from these libaries 
 
-#for now, the command is how it was orignially
-@plugin.command
-@lightbulb.option('gif',
-                  'send a cat gif?',
-                  required=False,
-                  default="",
-                  choices=[hikari.CommandChoice(name="Yes", value="/gif"),
-                           hikari.CommandChoice(name="No", value="")])
-@lightbulb.command("cat-broken",
-                   "get a random cat image from https://cataas.com/#/")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def cat_broken(ctx):
-    options = f"{ctx.options.gif}"
-    cat_url = f"https://cataas.com/cat{options}"
-    cat_image = Image.open(BytesIO(requests.get(cat_url).content))
-    
-    await ctx.respond(hikari.File(cat_image))
+#HAHAHHAHA WE FUCKING FIXED IT (With the help of Jack)
 
 
 def load(bot):
