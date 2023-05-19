@@ -113,13 +113,15 @@ async def toaster(ctx):
 async def cat_broken(ctx):
     options = f"{ctx.options.gif}"
     cat_url = f"https://cataas.com/cat{options}"
-
-    
+    fmat_type = "png"
+    if ctx.options.gif != "":
+        fmat_type = "gif"
+        
     with Image.open(requests.get(cat_url, stream=True).raw) as im:
         im.thumbnail((1024,1024))
-        im.save("temp_cat" + ".png", "PNG")
+        im.save(f"temp_cat" + "."+fmat_type, fmat_type.upper())
     
-    await ctx.respond(hikari.File("temp_cat.png"))
+    await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
 
 
 
