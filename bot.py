@@ -2,12 +2,10 @@
 import asyncio
 import os
 import time
-from io import BytesIO
 
 import hikari
 import lightbulb
 import miru
-import PIL
 import requests
 from dotenv import load_dotenv
 from PIL import Image
@@ -83,7 +81,7 @@ async def help(ctx):
                    "Get my creator's Ko-Fi page!")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def donate(ctx):
-    await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t")
+    await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t\n\nthe /cat command uses Cat As A Service (https://cataas.com/#/) please check them out as well,\nhttps://www.buymeacoffee.com/kevinbalicot ")
 
 @bot.command
 @lightbulb.command("toaster",
@@ -100,19 +98,29 @@ async def toaster(ctx):
     await ctx.respond(f"{user_ran}, Your Toast is ready!", user_mentions=True)
     #await bot.rest.create_message(channel_id, content=toast_list[0]) #TODO: No workie, pls make seperate message without replying to last
 
+#---> /cat,
+#-> Uses CAAS API to get a random image of a cat
 @bot.command
+@lightbulb.option('text',
+                  'add some text to the image',
+                  required=False,
+                  default="",
+                  )
 @lightbulb.option('gif',
-                  'send a cat gif?',
+                  'send a cat gif? (unsure if this works...)',
                   required=False,
                   default="",
                   choices=[hikari.CommandChoice(name="Yes", value="/gif"),
                            hikari.CommandChoice(name="No", value="")])
-@lightbulb.command("cat-broken",
+@lightbulb.command("cat",
                    "get a random cat image from https://cataas.com/#/")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def cat_broken(ctx):
+async def cat(ctx):
+    text = f"/says/{ctx.options.text}"
+    if ctx.options.text == "":
+        text = ""
     options = f"{ctx.options.gif}"
-    cat_url = f"https://cataas.com/cat{options}"
+    cat_url = f"https://cataas.com/cat{options}{text}"
     fmat_type = "png"
     if ctx.options.gif != "":
         fmat_type = "gif"
@@ -122,6 +130,7 @@ async def cat_broken(ctx):
         im.save(f"temp_cat" + "."+fmat_type, fmat_type.upper())
     
     await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
+
 
 
 
