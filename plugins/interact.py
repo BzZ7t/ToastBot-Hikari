@@ -12,9 +12,26 @@ plugin = lightbulb.Plugin("interact")
 
 #---> Common Functions
 
-async def simple_interaction(ctx, interaction): #---------------------------> function for simple user interactions based on list file and gif list files 
+# ----> '/interact' setup, note that the decription is not being used here, despite being added
+@plugin.command
+@lightbulb.option('gif',
+                  "add a gif to the message?", required=False, default=False,
+                  choices=[hikari.CommandChoice(name='Yes', value=True),
+                           hikari.CommandChoice(name='No', value=False)],
+                  type=bool)
+@lightbulb.option('interaction',
+                  "type of interaction",
+                  required=True,
+                  choices=['hug','kiss','boop', 'bap', 'toast',])
+@lightbulb.option('user',
+                  'Who would you like to interact with?', required=True)
+@lightbulb.command("interact",
+                   "interact with other users!")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def interact(ctx):
     user_ran = f"<@{ctx.author.id}>"
     user_interact = ctx.options.user
+    interaction = ctx.options.interaction
     list = open(f"./plugins/assets/interact/{interaction}_list.txt", "r").read().split("\n")
     list_gif = open(f"./plugins/assets/interact/{interaction}_list_gif.txt", "r").read().split("\n")
     
@@ -23,46 +40,9 @@ async def simple_interaction(ctx, interaction): #---------------------------> fu
                           user_mentions=True)
     else:
         #TODO: Use Tenor API here
-        await ctx.respond({list[random.randint(0,len(list))]})
+        await ctx.respond(f"{list[random.randint(0,len(list))]}".format(user_ran = user_ran, user_interact = user_interact),
+                          user_mentions=True)
 
-
-# ----> '/interact' setup, note that the decription is not being used here, despite being added
-@plugin.command
-@lightbulb.command("interact",
-                   "interact with other users!")
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def interact():
-    pass
-
-#---------------------------------> /interact hug 
-@interact.child
-@lightbulb.option('gif',
-                  "add a gif to the message?", required=False, default=False,
-                  choices=[hikari.CommandChoice(name='Yes', value=True),
-                           hikari.CommandChoice(name='No', value=False)],
-                  type=bool)
-@lightbulb.option('user',
-                  'Who would you like to hug?', required=True)
-@lightbulb.command('hug',
-                   'give another user a hug!')
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def hug(ctx):
-    await simple_interaction(ctx, interaction='hug')
-        
-@interact.child
-@lightbulb.option('gif',
-                  "add a gif to the message? ('Yes/No' or 'y/n')", required=False, default=False,
-                  choices=[hikari.CommandChoice(name='Yes', value=True),
-                           hikari.CommandChoice(name='No', value=False)],
-                  type=bool)
-@lightbulb.option('user',
-                  'Who would you like to boop?')
-@lightbulb.command('boop',
-                   'boop another user.')
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def boop(ctx):
-    simple_interaction(ctx, interaction='boop')
-        
 #-----------> More complex interactions,
 #---------------------------------> /interact violence user:
 
