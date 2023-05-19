@@ -4,10 +4,14 @@ import asyncio
 import os
 import random
 import time
+from io import BytesIO
 
 import hikari
 import lightbulb
 import miru
+import PIL
+import requests
+from PIL import Image
 
 plugin = lightbulb.Plugin("dev")
 
@@ -93,6 +97,30 @@ async def violence(ctx):
         await ctx.edit_last_response("they're not able to dodge this time...")
         asyncio.sleep(1)
         await ctx.respond(action_end[action_randm], user_mentions=True)
+
+#Command originally sent as a simple link, but because of how discord
+#works, it just showed a random image each person because the link gives
+#a random image blah blah blah somthing technical
+#Tried storing the file in a variable first before sending but I have no fucking clue
+#how to from these libaries 
+
+#for now, the command is how it was orignially
+@plugin.command
+@lightbulb.option('gif',
+                  'send a cat gif?',
+                  required=False,
+                  default="",
+                  choices=[hikari.CommandChoice(name="Yes", value="/gif"),
+                           hikari.CommandChoice(name="No", value="")])
+@lightbulb.command("cat-broken",
+                   "get a random cat image from https://cataas.com/#/")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def cat_broken(ctx):
+    options = f"{ctx.options.gif}"
+    cat_url = f"https://cataas.com/cat{options}"
+    cat_image = Image.open(BytesIO(requests.get(cat_url).content))
+    
+    await ctx.respond(hikari.File(cat_image))
 
 
 def load(bot):

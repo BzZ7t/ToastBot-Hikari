@@ -2,11 +2,15 @@
 import asyncio
 import os
 import time
+from io import BytesIO
 
 import hikari
 import lightbulb
 import miru
+import PIL
+import requests
 from dotenv import load_dotenv
+from PIL import Image
 
 print("Fix your code")
 load_dotenv()
@@ -95,6 +99,23 @@ async def toaster(ctx):
     await asyncio.sleep(3)
     await ctx.respond(f"{user_ran}, Your Toast is ready!", user_mentions=True)
     #await bot.rest.create_message(channel_id, content=toast_list[0]) #TODO: No workie, pls make seperate message without replying to last
+
+@bot.command
+@lightbulb.option('gif',
+                  'send a cat gif?',
+                  required=False,
+                  default="",
+                  choices=[hikari.CommandChoice(name="Yes", value="/gif"),
+                           hikari.CommandChoice(name="No", value="")])
+@lightbulb.command("cat",
+                   "get a random cat image from https://cataas.com/#/")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def cat(ctx):
+    options = f"{ctx.options.gif}"
+    cat_image = f"https://cataas.com/cat{options}"
+    
+    await ctx.respond(cat_image)
+
 
 bot.load_extensions_from("./plugins")
 bot.run()
