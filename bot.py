@@ -101,6 +101,11 @@ async def toaster(ctx):
 #---> /cat,
 #-> Uses CAAS API to get a random image of a cat
 @bot.command
+@lightbulb.option('filter',
+                  'add a filter',
+                  required=False,
+                  default="none",
+                  choices=['blur','mono','sepia','negative','paint','pixel']) #TODO: Finish this
 @lightbulb.option('text',
                   'add some text to the image',
                   required=False,
@@ -116,11 +121,12 @@ async def toaster(ctx):
                    "get a random cat image from https://cataas.com/#/")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def cat(ctx):
+    cat_filter = f'?filter={ctx.options.filter}'
     text = f"/says/{ctx.options.text}"
     if ctx.options.text == "":
         text = ""
     options = f"{ctx.options.gif}"
-    cat_url = f"https://cataas.com/cat{options}{text}"
+    cat_url = f"https://cataas.com/cat{cat_filter}{options}{text}"
     fmat_type = "png"
     if ctx.options.gif != "":
         fmat_type = "gif"
