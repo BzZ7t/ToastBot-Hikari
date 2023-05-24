@@ -23,7 +23,7 @@ async def fun(ctx):
                    'Make ToastBot reply with a toast-related insult')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def toastinsult(ctx):
-    insult = open("./plugins/assets/fun/toast-insults.txt", "r").read().split("\n")
+    insult = open("./plugins/assets/fun/toast-insults.txt", "r",encoding='utf-8').read().split("\n")
     await ctx.respond(insult[random.randint(0,len(insult))])
     
 @fun.child 
@@ -46,7 +46,7 @@ async def roll(ctx):
         await ctx.edit_last_response("You rolled a...")
         await asyncio.sleep(1)
         await ctx.edit_last_response(f"You rolled a **{random.randint(1, high_no)}**!")
-    except:
+    except ValueError:
         await ctx.respond("That is not a number, please try again")
         await asyncio.sleep(0.5)
         await ctx.edit_last_response("That is not a number, please try again.")

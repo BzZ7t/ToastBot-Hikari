@@ -1,5 +1,4 @@
 #/#/#/#/#/#/#/#/# ------> Imports
-import asyncio
 import os
 import time
 
@@ -57,8 +56,6 @@ async def timehere(ctx):
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
-    helptxt = open("./README.md", "r") #TODO: Use this if possible
-    print(helptxt)
     await ctx.respond(
 '''# Current Commands
 ```
@@ -88,15 +85,7 @@ async def donate(ctx):
                    "Toast bread (not Toast) into Toast")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def toaster(ctx):
-    channel_id = ctx.message.channel_id
-    user_ran = f"<@{ctx.author.id}>"
-    toast_list = ["https://www.collinsdictionary.com/images/full/toast_102709511.jpg",
-                  ]
-    
-    await ctx.respond("Toasting bread... Please wait...")
-    await asyncio.sleep(3)
-    await ctx.respond(f"{user_ran}, Your Toast is ready!", user_mentions=True)
-    #await bot.rest.create_message(channel_id, content=toast_list[0]) #TODO: No workie, pls make seperate message without replying to last
+    pass #TODO: please make this really fucking complex with some secrets or some shit idk who do you take me for? a wish maker?
 
 #---> /cat,
 #-> Uses CAAS API to get a random image of a cat
@@ -105,14 +94,14 @@ async def toaster(ctx):
                   'add a filter',
                   required=False,
                   default="none",
-                  choices=['blur','mono','sepia','negative','paint','pixel']) #TODO: Finish this
+                  choices=['blur','mono','sepia','negative','paint','pixel'])
 @lightbulb.option('text',
                   'add some text to the image',
                   required=False,
                   default="",
                   )
-@lightbulb.option('gif',
-                  'send a cat gif? (unsure if this works...)',
+@lightbulb.option('gif', #TODO: gif no workie, just shows first frame ffs
+                  'send a cat gif? (does not work at the moment...)',
                   required=False,
                   default="",
                   choices=[hikari.CommandChoice(name="Yes", value="/gif"),
@@ -130,11 +119,12 @@ async def cat(ctx):
     fmat_type = "png"
     if ctx.options.gif != "":
         fmat_type = "gif"
-        
-    with Image.open(requests.get(cat_url, stream=True).raw) as im:
+
+    with Image.open(requests.get(cat_url, stream=True, timeout=5).raw) as im:
         im.thumbnail((1024,1024))
-        im.save(f"temp_cat" + "."+fmat_type, fmat_type.upper())
-    
+        im.save("temp_cat" + "."+fmat_type, fmat_type.upper())
+
+
     await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
 
 

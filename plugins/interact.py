@@ -32,8 +32,8 @@ async def interact(ctx):
     user_ran = f"<@{ctx.author.id}>"
     user_interact = ctx.options.user
     interaction = ctx.options.interaction
-    list = open(f"./plugins/assets/interact/{interaction}_list.txt", "r").read().split("\n")
-    list_gif = open(f"./plugins/assets/interact/{interaction}_list_gif.txt", "r").read().split("\n")
+    list = open(f"./plugins/assets/interact/{interaction}_list.txt", "r",encoding='utf-8').read().split("\n")
+    list_gif = open(f"./plugins/assets/interact/{interaction}_list_gif.txt", "r",encoding='utf-8').read().split("\n")
     try:
         if ctx.options.gif == True:
             await ctx.respond(f"{list[random.randint(0,len(list))]}\n{list_gif[random.randint(0,len(list_gif))]}".format(user_ran = user_ran, user_interact = user_interact),
