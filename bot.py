@@ -102,7 +102,7 @@ async def toaster(ctx):
                   default="",
                   )
 @lightbulb.option('gif', #TODO: gif no workie, just shows first frame ffs
-                  'send a cat gif? (does not work at the moment...)',
+                  'send a cat gif?',
                   required=False,
                   default="",
                   choices=[hikari.CommandChoice(name="Yes", value="/gif"),
@@ -126,7 +126,7 @@ async def cat(ctx):
 
     with Image.open(BytesIO(response.content)) as im:
         im.thumbnail((1024, 1024))
-        im.save("temp_cat." + fmat_type, save_all=True)
+        im.save("temp_cat." + fmat_type,fmat_type.upper(), save_all=True)
 
     await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
 
