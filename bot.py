@@ -86,7 +86,7 @@ async def donate(ctx):
                    "Toast bread (not Toast) into Toast")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def toaster(ctx):
-    pass #TODO: please make this really fucking complex with some secrets or some shit idk who do you take me for? a wish maker?
+    pass #TODO: What can I do here that would actually be interesting?
 
 #---> /cat,
 #-> Uses CAAS API to get a random image of a cat

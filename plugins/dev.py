@@ -15,12 +15,7 @@ from PIL import Image
 
 plugin = lightbulb.Plugin("dev")
 
-@plugin.command
-@lightbulb.command('test',
-                   'test')
-@lightbulb.implements(lightbulb.SlashCommand)
-async def test(ctx):
-    await ctx.respond("Test")
+#why did I make a /test command? isn't thats what /ping is for?
     
 #/cute-checkrr command for playing around with Kohvi hehe
 @plugin.command
@@ -38,101 +33,13 @@ async def cute(ctx):
         
 #supposted be to /interact violence but here is /violence. 
 #currently doesn't work...
-@plugin.command
-@lightbulb.option('user',
-                  'Who shall suffer?', required=True)
-@lightbulb.command('violence',
-                   "commit an act of violence to another user >:}")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def violence(ctx):
-    user_ran = f"<@{ctx.author.id}>"
-    user_interact = ctx.options.user
-    action = [f"{user_ran} decided to throw a stone at {user_interact}"]
-    action_end = [f"{user_ran} gave {user_interact} a concussion"]
-    action_dodged = [f"{user_interact} dodged {user_ran}'s rock"]
-    action_randm = random.randint(0, len(action)-1)
-    dodge_randm = [random.randint(0, 2)]
-    dodge_randm = 1
-    
-                    
-    #TODO: Fix this goddamn button
-
-    class dodge_btn(miru.View): 
-            @miru.button(label='Dodge!', style=hikari.ButtonStyle.PRIMARY)
-            async def btn_dodge(self, button: miru.button, ctx: miru.context) -> None:
-                global ddg
-                ddg = True
-                await ctx.respond(action_dodged[action_randm],user_mentions=True)
-                
-                
-                
-                
-    await ctx.respond(action[action_randm])
-    if dodge_randm == 1:
-        view = dodge_btn(timeout=4)
-        message = await ctx.respond(f"{user_interact} you have a chance to dodge it!\n" +
-                    "quick! press the button below to dodge the attack!", components=view.build(), user_mentions=True)
-        
-        t1_start = time.perf_counter()
-        active = True
-        view.start(message)
-        while active:
-            print(time.perf_counter()-t1_start)
-            if ddg == True:
-                active = False
-            elif (time.perf_counter() - t1_start) >= 3:
-                active = False
-                await ctx.edit_last_response(f"{user_interact} had a chance to dodge but failed ;-;")
-                await ctx.respond(action_end[action_randm], user_mentions=True)
-            
-        
-        
-    else:
-        await ctx.respond("they're not able to dodge this time")
-        asyncio.sleep(0.5)
-        await ctx.edit_last_response("they're not able to dodge this time.")
-        asyncio.sleep(0.5)
-        await ctx.edit_last_response("they're not able to dodge this time..")
-        asyncio.sleep(0.5)
-        await ctx.edit_last_response("they're not able to dodge this time...")
-        asyncio.sleep(1)
-        await ctx.respond(action_end[action_randm], user_mentions=True)
-        
-
-@lightbulb.option("user", 
-                  "The user you want to attack", required=True)
-@lightbulb.command("violencetest", 
-                   "Attack another user")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def violence(self, ctx):
-    user_ran = ctx.author.id
-    user_interact = ctx.options.user
-
-    await ctx.respond(f"{user_ran.mention} is attacking {user_interact.mention}! Respond quickly to dodge!")
-
-    async def dodge_get():
-        active = True
-        while active:
-            try:
-                interaction = await self.bot.wait_for(
-                    miru.SlashCommandInteractionEvent,
-                    timeout=5.0,
-                    check=lambda i: i.member == user_interact,
-                )
-                if interaction.command_name.lower() == "dodge":
-                    active = False
-                    return True
-            except asyncio.TimeoutError:
-                active = False
-                return False
-
-    dodge_result = await dodge_get()
-
-    if dodge_result:
-        await ctx.respond(f"{user_interact.mention} dodged the attack!")
-    else:
-        await ctx.respond(f"{user_ran.mention} successfully attacked {user_interact.mention}!")
-
+#deleted due to be rewritten in the future or be kept scrapped entirely
+#it would allow the user to 'attack' other users 
+#the bot would chose a random response
+#randomly, the other user would have a chance to dodge
+#if the other user doesn't dodge in time, they fail to dodge
+#I even asked chatGPT for this shit, what the hell happend to its now watered down AI?
+#Bad users fucked it as always when somthing gets popular
 
 #Command originally sent as a simple link, but because of how discord
 #works, it just showed a random image each person because the link gives
