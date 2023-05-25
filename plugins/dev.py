@@ -97,6 +97,42 @@ async def violence(ctx):
         await ctx.edit_last_response("they're not able to dodge this time...")
         asyncio.sleep(1)
         await ctx.respond(action_end[action_randm], user_mentions=True)
+        
+
+@lightbulb.option("user", 
+                  "The user you want to attack", required=True)
+@lightbulb.command("violencetest", 
+                   "Attack another user")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def violence(self, ctx):
+    user_ran = ctx.author.id
+    user_interact = ctx.options.user
+
+    await ctx.respond(f"{user_ran.mention} is attacking {user_interact.mention}! Respond quickly to dodge!")
+
+    async def dodge_get():
+        active = True
+        while active:
+            try:
+                interaction = await self.bot.wait_for(
+                    miru.SlashCommandInteractionEvent,
+                    timeout=5.0,
+                    check=lambda i: i.member == user_interact,
+                )
+                if interaction.command_name.lower() == "dodge":
+                    active = False
+                    return True
+            except asyncio.TimeoutError:
+                active = False
+                return False
+
+    dodge_result = await dodge_get()
+
+    if dodge_result:
+        await ctx.respond(f"{user_interact.mention} dodged the attack!")
+    else:
+        await ctx.respond(f"{user_ran.mention} successfully attacked {user_interact.mention}!")
+
 
 #Command originally sent as a simple link, but because of how discord
 #works, it just showed a random image each person because the link gives
