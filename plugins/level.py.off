@@ -1,0 +1,57 @@
+import hikari
+import lightbulb
+import random
+import json
+
+plugin = lightbulb.Plugin('level')
+
+level_file = 'plugins/assets/level/levels.json'
+
+def load_user_levels(self):
+    try:
+        with open(level_file, "r") as file:
+            self.user_levels.update(json.load(file))
+    except FileNotFoundError:
+        print(f"{level_file} not found. Starting with an empty user_levels dictionary.")
+
+def save_user_levels(self):
+    with open(level_file, "w") as file:
+        json.dump(self.user_levels, file, indent=4)
+
+@lightbulb.listener(lightbulb.StartingEvent)
+async def on_starting(self, event: lightbulb.StartingEvent):
+    self.load_user_levels()
+
+@lightbulb.listener(lightbulb.StoppingEvent)
+async def on_stopping(self, event: lightbulb.StoppingEvent):
+    self.save_user_levels()
+
+@lightbulb.listener(hikari.GuildMessageCreateEvent)
+async def on_message_create(self, event: hikari.GuildMessageCreateEvent):
+    message = event.message
+    author = message.author
+
+    if author.is_bot:
+        return
+
+    if author.id not in self.user_levels:
+        self.user_levels[author.id] = 0
+
+    if random.random() < 0.1:  # Adjust the probability as desired
+        self.user_levels[author.id] += 1
+        level_message = f"Congratulations {author.mention}! You leveled up to level {self.user_levels[author.id]}!"
+        await message.respond(level_message)
+
+@lightbulb.command()
+async def level(self, ctx):
+    author = ctx.member
+
+    if author.id in self.user_levels:
+        current_level = self.user_levels[author.id]
+        level_message = f"{author.mention}, your current level is {current_level}."
+        await ctx.respond(level_message)
+    else:
+        await ctx.respond("You haven't earned any levels yet.")
+
+def load(bot):
+    bot.add_plugin(plugin)

@@ -1,4 +1,5 @@
 #/#/#/#/#/#/#/#/# ------> Imports
+from io import BytesIO
 import os
 import time
 
@@ -115,20 +116,21 @@ async def cat(ctx):
     if ctx.options.text == "":
         text = ""
     options = f"{ctx.options.gif}"
-    cat_url = f"https://cataas.com/cat{cat_filter}{options}{text}"
+    cat_url = f"https://cataas.com/cat{options}{text}{cat_filter}"
     fmat_type = "png"
     if ctx.options.gif != "":
         fmat_type = "gif"
 
-    with Image.open(requests.get(cat_url, stream=True, timeout=5).raw) as im:
-        im.thumbnail((1024,1024))
-        im.save("temp_cat" + "."+fmat_type, fmat_type.upper())
+    response = requests.get(cat_url, stream=True, timeout=5)
+    response.raise_for_status()
 
+    with Image.open(BytesIO(response.content)) as im:
+        im.thumbnail((1024, 1024))
+        im.save("temp_cat." + fmat_type, save_all=True)
 
     await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
 
-
-
+    
 
 bot.load_extensions_from("./plugins")
 bot.run()
