@@ -1,7 +1,8 @@
 #/#/#/#/#/#/#/#/# ------> Imports
-from io import BytesIO
+import asyncio
 import os
 import time
+from io import BytesIO
 
 import hikari
 import lightbulb
@@ -57,22 +58,8 @@ async def timehere(ctx):
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
-    await ctx.respond(
-'''# Current Commands
-```
-/fun: Do all the **fun** stuff :D
----> toast-insults: Make ToastBot reply with a toast-related insult
----> roll: Roll a dice
-
-/interact: interact with other users!
----> violence: commit an act of violence to another user >:}
----> hug: give another user a hug!
----> boop: boop another user
-
-/help: Get a list of all commands
-/donate: Get my creator's Ko-Fi page!
-```''')
-        
+    help_file = open('README.md', 'r', encoding='utf-8').read()
+    await ctx.respond(help_file)
 
 @bot.command
 @lightbulb.command("donate",
@@ -120,17 +107,21 @@ async def cat(ctx):
     fmat_type = "png"
     if ctx.options.gif != "":
         fmat_type = "gif"
+    try:
+        response = requests.get(cat_url, stream=True, timeout=5)
+        response.raise_for_status()
+        with Image.open(BytesIO(response.content)) as im:
+            im.thumbnail((1024, 1024))
+            im.save("temp_cat." + fmat_type, save_all=True)
 
-    response = requests.get(cat_url, stream=True, timeout=5)
-    response.raise_for_status()
+        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
+        
+    except requests.exceptions.ConnectionError:
+        await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot', flags=hikari.MessageFlag.EPHEMERAL)
 
-    with Image.open(BytesIO(response.content)) as im:
-        im.thumbnail((1024, 1024))
-        im.save("temp_cat." + fmat_type,fmat_type.upper(), save_all=True)
-
-    await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
 
     
-
+# Any plugin with the extention .py.off will not be implemented
+# the .off has no particular funtion, lightbulb just doesn't recognise it
 bot.load_extensions_from("./plugins")
 bot.run()

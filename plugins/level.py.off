@@ -1,7 +1,16 @@
+#
+#
+#
+#    NOT CURRENTLY CONFIDENT THIS WORKS
+#       I got lazy and used chatGPT 
+#
+#
+
+import json
+import random
+
 import hikari
 import lightbulb
-import random
-import json
 
 plugin = lightbulb.Plugin('level')
 
@@ -18,15 +27,15 @@ def save_user_levels(self):
     with open(level_file, "w") as file:
         json.dump(self.user_levels, file, indent=4)
 
-@lightbulb.listener(lightbulb.StartingEvent)
-async def on_starting(self, event: lightbulb.StartingEvent):
+@plugin.listener(hikari.StartingEvent)
+async def on_starting(self, event: hikari.StartingEvent):
     self.load_user_levels()
 
-@lightbulb.listener(lightbulb.StoppingEvent)
-async def on_stopping(self, event: lightbulb.StoppingEvent):
+@plugin.listener(hikari.StoppingEvent)
+async def on_stopping(self, event: hikari.StoppingEvent):
     self.save_user_levels()
 
-@lightbulb.listener(hikari.GuildMessageCreateEvent)
+@plugin.listener(hikari.GuildMessageCreateEvent)
 async def on_message_create(self, event: hikari.GuildMessageCreateEvent):
     message = event.message
     author = message.author
@@ -42,12 +51,18 @@ async def on_message_create(self, event: hikari.GuildMessageCreateEvent):
         level_message = f"Congratulations {author.mention}! You leveled up to level {self.user_levels[author.id]}!"
         await message.respond(level_message)
 
-@lightbulb.command()
+@plugin.command
+@lightbulb.option('user',
+                  "check another user's level",
+                  required=False,
+                  default="")
+@lightbulb.command('level',
+                   "check your, or another user's level")
 async def level(self, ctx):
-    author = ctx.member
+    author = ctx.author.id
 
     if author.id in self.user_levels:
-        current_level = self.user_levels[author.id]
+        current_level = self.user_levels[author]
         level_message = f"{author.mention}, your current level is {current_level}."
         await ctx.respond(level_message)
     else:
