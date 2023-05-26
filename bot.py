@@ -54,19 +54,19 @@ async def timehere(ctx):
         await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
         
 @bot.command
-@lightbulb.command('ToastBot-help',
+@lightbulb.command('help',
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
     help_file = open('README.md', 'r', encoding='utf-8').read()
-    await ctx.respond(help_file)
+    await ctx.respond(help_file, flags=hikari.MessageFlag.SUPPRESS_EMBEDS)
 
 @bot.command
 @lightbulb.command("donate",
                    "Get my creator's Ko-Fi page!")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def donate(ctx):
-    await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t\n\nthe /cat command uses Cat As A Service (https://cataas.com/#/) please check them out as well,\nhttps://www.buymeacoffee.com/kevinbalicot ")
+    await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t\n\nthe /cat command uses Cat As A Service (https://cataas.com/#/) please check them out as well,\nhttps://www.buymeacoffee.com/kevinbalicot")
 
 @bot.command
 @lightbulb.command("toaster",
