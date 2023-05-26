@@ -54,7 +54,7 @@ async def timehere(ctx):
         await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
         
 @bot.command
-@lightbulb.command('help',
+@lightbulb.command('ToastBot-help',
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
