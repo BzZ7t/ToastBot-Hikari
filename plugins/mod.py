@@ -9,6 +9,11 @@ import miru
 
 plugin = lightbulb.Plugin("mod")
 
+def get_user_id(user):
+    remove_chara = ["<","@",">"]
+    for x in remove_chara: 
+        user = str.replace(user,x, "")
+
 #----> '/fun' setup, note that the decription is not being used here, despite being added
 @plugin.command
 @lightbulb.command("mod",
@@ -26,18 +31,16 @@ async def mod(ctx):
                   default='No reason given')
 @lightbulb.option("user",
                   "Who is the user you would like to ban?",
-                  required=True)
+                  required=True,)
 @lightbulb.command('ban',
                    'ban a member from the server')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def ban(ctx):
     server = ctx.get_guild() 
     reason = ctx.options.reason
-    remove_chara = ["<","@",">"]
     user_interact = ctx.options.user
+    get_user_id(user_interact)
     
-    for x in remove_chara: 
-        user_interact = str.replace(user_interact,x, "")
     await server.ban(user_interact, reason=reason)
     await ctx.respond(f"{ctx.options.user} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
@@ -58,11 +61,9 @@ async def ban(ctx):
 async def kick(ctx):
     server = ctx.get_guild()
     reason = f"{ctx.options.reason}"
-    remove_chara = ["<","@",">"]
     user_interact = ctx.options.user
+    get_user_id(user_interact)
     
-    for x in remove_chara: 
-        user_interact = str.replace(user_interact,x, "")
     await server.kick(user_interact, reason=reason)
     await ctx.respond(f"{ctx.options.user} was succesfully kicked with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
