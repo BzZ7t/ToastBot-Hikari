@@ -1,2 +1,25 @@
-{user_ran} test1 for {user_interact}
-{user_ran} test2 for {user_interact}
+{user_ran} warmly embraces {user_interact} in a tight and comforting hug
+With open arms, {user_ran} lovingly wraps themselves around {user_interact} in a warm hug
+{user_ran} pulls {user_interact} close and shares a heartfelt and meaningful hug
+In a tender moment, {user_ran} envelops {user_interact} in a gentle and comforting hug
+{user_ran} extends their arms and pulls {user_interact} into a warm and tight embrace
+With a smile, {user_ran} leans in and gives {user_interact} a warm and affectionate hug
+{user_ran} tightly squeezes {user_interact} in a loving and reassuring hug
+With a sense of tenderness, {user_ran} wraps their arms around {user_interact} and holds them close in a heartfelt hug
+{user_ran} offers {user_interact} a sincere and comforting hug, conveying care and support
+In a gesture of affection, {user_ran} pulls {user_interact} into a warm and heartfelt embrace
+{user_ran} gently holds {user_interact} in a comforting hug, letting them know they are there for them
+With warmth in their eyes, {user_ran} embraces {user_interact} in a long and heartfelt hug
+{user_ran} opens their arms wide, inviting {user_interact} into a warm and loving embrace
+In a moment of solace, {user_ran} wraps their arms around {user_interact} and holds them tightly in a comforting hug
+{user_ran} pulls {user_interact} close and shares a tender and meaningful hug
+With care and affection, {user_ran} leans in and embraces {user_interact} in a warm and heartfelt hug
+{user_ran} lovingly wraps their arms around {user_interact} and holds them gently in a nurturing hug
+In a show of support, {user_ran} offers {user_interact} a warm and compassionate hug, letting them know they are not alone
+{user_ran} pulls {user_interact} into a tight and protective hug, creating a sense of safety and comfort
+With empathy and love, {user_ran} envelops {user_interact} in a tender and soothing hug
+{user_ran} holds {user_interact} in a close and affectionate hug, sharing a moment of connection
+With a gentle embrace, {user_ran} wraps their arms around {user_interact} and expresses their care through a heartfelt hug
+{user_ran} pulls {user_interact} into a warm and sincere hug, conveying their support and understanding
+In a comforting gesture, {user_ran} tightly holds {user_interact} in a loving and protective hug
+{user_ran} shares a heartfelt embrace with {user_interact}, reminding them of the strength of their bond and friendship

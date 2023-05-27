@@ -65,7 +65,7 @@ async def kick(ctx):
     get_user_id(user_interact)
     
     await server.kick(user_interact, reason=reason)
-    await ctx.respond(f"{ctx.options.user} was succesfully kicked with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond(f"{user_interact} was succesfully kicked with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
     
     

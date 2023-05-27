@@ -9,7 +9,7 @@ from io import BytesIO
 import hikari
 import lightbulb
 import miru
-import PIL
+import PIL 
 import requests
 from PIL import Image
 

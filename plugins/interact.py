@@ -14,15 +14,16 @@ plugin = lightbulb.Plugin("interact")
 
 # ----> '/interact' setup, note that the decription is not being used here, despite being added
 @plugin.command
-@lightbulb.option('gif',
-                  "add a gif to the message?", required=False, default=False,
-                  choices=[hikari.CommandChoice(name='Yes', value=True),
-                           hikari.CommandChoice(name='No', value=False)],
-                  type=bool)
+#@lightbulb.option('gif',
+#                  "add a gif to the message?", required=False, default=False,
+#                  choices=[hikari.CommandChoice(name='Yes', value=True),
+#                           hikari.CommandChoice(name='No', value=False)],
+#                  type=bool)
 @lightbulb.option('interaction',
-                  "type of interaction",
+                  "type of interaction (More will be added in the future)",
                   required=True,
-                  choices=['hug','kiss','boop', 'bap', 'toast',])
+                  choices=['hug','kiss','boop',],
+                  autocomplete=True)
 @lightbulb.option('user',
                   'Who would you like to interact with?', required=True)
 @lightbulb.command("interact",
@@ -43,7 +44,8 @@ async def interact(ctx):
             await ctx.respond(f"{list[random.randint(0,len(list))]}".format(user_ran = user_ran, user_interact = user_interact),
                             user_mentions=True)
     except FileNotFoundError:
-        await ctx.respond(f"Command still being implemented,\nfile for `{interaction}` doesn't exist for me to interact")
+        await ctx.respond(f"There was an error opening {interaction} interactions...\nThe error has been logged and will be fixed")
+        print(f"ERROR!: Where the fuck is the file for {interaction}s?")
 
 #-----------> More complex interactions,
 #---------------------------------> /interact violence user:
