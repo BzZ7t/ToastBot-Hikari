@@ -79,13 +79,13 @@ async def coinflip(ctx):
     await asyncio.sleep(0.25)
     await ctx.edit_last_response('The coin landed on...')
     await asyncio.sleep(1)
-    await ctx.edit_last_response(f'The coin landed on {coin_result}!')
+    await ctx.edit_last_response(f'The coin landed on **{coin_result}**!')
     
     if guess != 'None':
         if guess == coin_result:
-            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed correctly! ({guess})')
+            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed correctly! (**{guess}**)')
         else:
-            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed incorrectly ({guess})')
+            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed incorrectly (**{guess}**)')
 
 
 

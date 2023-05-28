@@ -119,8 +119,28 @@ async def cat(ctx):
     except requests.exceptions.ConnectionError:
         await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot', flags=hikari.MessageFlag.EPHEMERAL)
 
+@bot.command
+@lightbulb.option('text',
+                  'type the feedback/suggestion',
+                  required=True)
+@lightbulb.command('suggest',
+                   'give some feedback and/or suggestions to my creator!')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def suggest(ctx):
+    user = ctx.author.id
+    username = ctx.author
+    sugg = ctx.options.text
+    try:
+        file = open(f'feedbacksuggestions/{user}_feedback.txt', 'r', encoding='utf-8')
+        await ctx.respond('You have already made a suggestion,\nplease let Zed know if you made a mistake with your suggestion', flags=hikari.MessageFlag.EPHEMERAL)
+        print(f'Possible suggest error by {username}')
+        
+    except FileNotFoundError:
+        file = open(f'feedbacksuggestions/{user}_feedback.txt', 'w', encoding='utf-8')
+        file.write(f'{sugg}\nby {username}')
+        await ctx.respond(f"Thank you for your suggestion {username.mention}!\nIt's greatly appriciated :>\n```{sugg}```")
+        
 
-    
 # Any plugin with the extention .py.off will not be implemented
 # the .off has no particular funtion, lightbulb just doesn't recognise it
 bot.load_extensions_from("./plugins")

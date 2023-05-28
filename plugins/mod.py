@@ -13,6 +13,7 @@ def get_user_id(user):
     remove_chara = ["<","@",">"]
     for x in remove_chara: 
         user = str.replace(user,x, "")
+    return user
 
 #----> '/fun' setup, note that the decription is not being used here, despite being added
 @plugin.command
@@ -39,10 +40,10 @@ async def ban(ctx):
     server = ctx.get_guild() 
     reason = ctx.options.reason
     user_interact = ctx.options.user
-    get_user_id(user_interact)
+    user_interact_id = get_user_id(user_interact)
     
-    await server.ban(user_interact, reason=reason)
-    await ctx.respond(f"{ctx.options.user} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
+    await server.ban(user_interact_id, reason=reason)
+    await ctx.respond(f"{user_interact} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
 
 @mod.child
@@ -62,9 +63,9 @@ async def kick(ctx):
     server = ctx.get_guild()
     reason = f"{ctx.options.reason}"
     user_interact = ctx.options.user
-    get_user_id(user_interact)
+    user_interact_id = get_user_id(user_interact)
     
-    await server.kick(user_interact, reason=reason)
+    await server.kick(user_interact_id, reason=reason)
     await ctx.respond(f"{user_interact} was succesfully kicked with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
     
