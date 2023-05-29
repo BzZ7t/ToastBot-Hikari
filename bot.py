@@ -20,7 +20,7 @@ bot = lightbulb.BotApp(token=TOKEN, default_enabled_guilds=(1011278408770146374,
 miru.install(bot)
 
 def get_welcome(ctx):
-    server = ctx.get_guild()
+    server = ctx.get_guild().id
     with open(f'server_save/{server}/welcome.json', 'r', encoding='utf-8') as json_file:
         jsn_welcome = json.load(json_file)
     return jsn_welcome

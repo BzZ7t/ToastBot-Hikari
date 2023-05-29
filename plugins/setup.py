@@ -1,6 +1,8 @@
+import json
+import os
+
 import hikari
 import lightbulb
-import json
 
 plugin = lightbulb.Plugin('setup')
 
@@ -29,12 +31,15 @@ async def welcome(ctx):
     chara_rem = ['<','#','>']
     for x in chara_rem:
         channel_id = channel_id.replace(x,'') 
-        # Yes its dirty. I'm aware that they may be a command behavour to fix this
+        # Yes its dirty. I'm aware that they may be a command behavour to fix this, no clue what it is tho
     file = {"server_id":f"{server}",
             "welcome_channel":f"{channel_id}",
             "welcome_txt":f"{message}"}
-
     jsn_info = json.dumps(file)
+    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+    
     file = open(f'server_save/{server}/welcome.json', 'w', encoding='utf-8')
     with file as json_file:
         json.dump(jsn_info,json_file)
