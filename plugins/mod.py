@@ -20,7 +20,7 @@ def get_user_id(user):
 @lightbulb.command("mod",
                   "Moderation tools for the Mod Team")
 @lightbulb.implements(lightbulb.SlashCommandGroup)
-async def mod(ctx):
+async def mod():
     pass
 
 @mod.child
@@ -52,7 +52,7 @@ async def ban(ctx):
                       lightbulb.bot_has_guild_permissions(hikari.Permissions.KICK_MEMBERS))
 @lightbulb.option("reason",
                   "What is the reason for kick?", required=False,
-                  default=f'No reason given')
+                  default='No reason given')
 @lightbulb.option("user",
                   "Who is the user you would like to kick?",
                   required=True)

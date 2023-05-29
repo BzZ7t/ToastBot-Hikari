@@ -1,5 +1,6 @@
 #/#/#/#/#/#/#/#/# ------> Imports
 import asyncio
+import json
 import os
 import time
 from io import BytesIO
@@ -15,9 +16,14 @@ print("Fix your code")
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 
-bot = lightbulb.BotApp(token=TOKEN)
+bot = lightbulb.BotApp(token=TOKEN, default_enabled_guilds=(1011278408770146374,1105527442468253789))
 miru.install(bot)
 
+def get_welcome(ctx):
+    server = ctx.get_guild()
+    with open(f'server_save/{server}/welcome.json', 'r', encoding='utf-8') as json_file:
+        jsn_welcome = json.load(json_file)
+    return jsn_welcome
 
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
@@ -31,6 +37,15 @@ async def startup(event):
             🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
                                                                                         ''')
     
+@bot.listen(hikari.MemberCreateEvent)
+async def welcome_join(ctx):
+    try:
+        file = get_welcome(ctx)
+        await bot.rest.create_message(file['welcome_channel'], file['welcome_txt'])
+        
+    except FileNotFoundError:
+        pass
+    
 
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
@@ -39,20 +54,6 @@ async def startup(event):
 async def ping(ctx):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
-#TODO Unsure wether of not to remove this as it serves no purpose in its current state
-@bot.command#----------------> /time
-@lightbulb.command("get-time",
-                   "Says the current time")
-@lightbulb.implements(lightbulb.SlashCommand)
-async def timehere(ctx):
-    t = time.localtime()
-    current_time = time.strftime("%I:%M %p", t)
-    current_time_hour = time.strftime("%I", t)
-    current_time_aftrm = time.strftime("%p", t)
-    await ctx.respond("The current time in the UK is: "+current_time)
-    if int(current_time_hour) >= 12 and current_time_aftrm == "PM":
-        await ctx.respond("<@592732403546587323>! GO TO SLEEP!")   
-        
 @bot.command
 @lightbulb.command('help',
                    'Get a list of all commands')
