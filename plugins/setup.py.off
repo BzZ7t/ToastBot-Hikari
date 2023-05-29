@@ -6,6 +6,21 @@ import lightbulb
 
 plugin = lightbulb.Plugin('setup')
 
+def get_welcome(ctx):
+    server = ctx.get_guild().id
+    with open(f'server_save/{server}/welcome.json', 'r', encoding='utf-8') as json_file:
+        jsn_welcome = json.load(json_file)
+    return jsn_welcome
+
+@plugin.listener(hikari.MemberCreateEvent)
+async def welcome_join(ctx):
+    try:
+        file = get_welcome(ctx)
+        await plugin.rest.create_message(file['welcome_channel'], file['welcome_txt'])
+        
+    except FileNotFoundError:
+        pass
+
 @plugin.command
 @lightbulb.command('setup',
                    'list of setup stuff')

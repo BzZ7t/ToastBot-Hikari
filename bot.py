@@ -16,14 +16,10 @@ print("Fix your code")
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 
-bot = lightbulb.BotApp(token=TOKEN, default_enabled_guilds=(1011278408770146374,1105527442468253789))
+bot = lightbulb.BotApp(token=TOKEN)
 miru.install(bot)
 
-def get_welcome(ctx):
-    server = ctx.get_guild().id
-    with open(f'server_save/{server}/welcome.json', 'r', encoding='utf-8') as json_file:
-        jsn_welcome = json.load(json_file)
-    return jsn_welcome
+
 
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
@@ -37,14 +33,7 @@ async def startup(event):
             🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
                                                                                         ''')
     
-@bot.listen(hikari.MemberCreateEvent)
-async def welcome_join(ctx):
-    try:
-        file = get_welcome(ctx)
-        await bot.rest.create_message(file['welcome_channel'], file['welcome_txt'])
-        
-    except FileNotFoundError:
-        pass
+
     
 
 @bot.command#\--------> /ping
