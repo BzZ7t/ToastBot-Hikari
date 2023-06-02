@@ -37,8 +37,8 @@ async def startup(event):
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
     error_dict = {lightbulb.errors.CommandNotFound:None,
-                 lightbulb.errors.NotEnoughArguments:await event.context.respond("Some arguments are missing: "+", ".join(event.exception.missing_options),
-                                                                                 flags=hikari.MessageFlag.EPHEMERAL),
+                 #lightbulb.errors.NotEnoughArguments:await event.context.respond("Some arguments are missing: "+", ".join(event.exception.missing_options),
+                 #                                                                flags=hikari.MessageFlag.EPHEMERAL),
                  lightbulb.errors.CommandIsOnCooldown:await event.context.respond(f"Hey! You gotta wait a bit before you do this command again!\nPlease wait **{event.exception.retry_after:.0f}** second(s) before trying again.",
                                                                                   flags=hikari.MessageFlag.EPHEMERAL),
                  lightbulb.errors.MissingRequiredPermission:await event.context.respond("Hey! You don't have the permissions to do this here!",

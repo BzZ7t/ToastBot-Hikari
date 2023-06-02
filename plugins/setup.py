@@ -44,20 +44,23 @@ async def welcome(ctx):
     channel = ctx.options.channel
     channel_id = channel
     chara_rem = ['<','#','>']
+    file = {
+        "server_id":server,
+        "welcome_channel":channel_id,
+        "welcome_txt":message
+    }
+    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
+    
     for x in chara_rem:
         channel_id = channel_id.replace(x,'') 
         # Yes its dirty. I'm aware that they may be a command behavour to fix this, no clue what it is tho
-    file = {"server_id":f"{server}",
-            "welcome_channel":f"{channel_id}",
-            "welcome_txt":f"{message}"}
-    jsn_info = json.dumps(file)
-    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
+
     if not os.path.exists(newpath):
         os.makedirs(newpath)
     
-    file = open(f'server_save/{server}/welcome.json', 'w', encoding='utf-8')
-    with file as json_file:
-        json.dump(jsn_info,json_file)
+    file_location = open(f'server_save/{server}/welcome.json', 'w', encoding='utf-8')
+    with file_location as json_file:
+        json.dump(file,json_file, indent=2)
         
     await ctx.respond(f'A welcome channel has been set to {channel}\n{message}')
 
