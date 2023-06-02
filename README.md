@@ -24,5 +24,5 @@ An all-purpose bot for discord made in Python with Hikari!
 
 ## Keep me free without any freemium subcription by supporting my creator on Ko-Fi
 
-<https://ko-fi.com/bzz7t>
+<https://ko-fi.com/bzz7t>  
 Thank you!
