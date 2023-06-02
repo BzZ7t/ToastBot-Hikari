@@ -1,4 +1,4 @@
-#/#/#/#/#/#/#/#/# ------> Imports
+#/#/#/#/#/#/#/#/# ---> Imports
 import asyncio
 import json
 import os
@@ -12,14 +12,24 @@ import requests
 from dotenv import load_dotenv
 from PIL import Image
 
+#/#/#/#/#/#/#/#/#/#/#/#/# ---> Loading the bot
 print("Fix your code")
+intents = hikari.Intents
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
-
-bot = lightbulb.BotApp(token=TOKEN)
+bot = lightbulb.BotApp(token=TOKEN, intents=intents)
 miru.install(bot)
 
+#/#/#/#/#/#/#/# ---> Varibles
+global dev_mode
+dev_mode = True
 
+#/#/#/#/#/#/#/#/#/#/#/# ---> Functions
+async def get_welcome(ctx): #TODO: Make this into a 'get_json()' in the future
+    server = ctx.get_guild().id
+    with open(f'server_save/{server}/welcome.json', 'r', encoding='utf-8') as json_file:
+        jsn_welcome = json.load(json_file)
+    return jsn_welcome
 
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
@@ -36,16 +46,19 @@ async def startup(event):
     
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
-    error_dict = {lightbulb.errors.CommandNotFound:None,
-                 #lightbulb.errors.NotEnoughArguments:await event.context.respond("Some arguments are missing: "+", ".join(event.exception.missing_options),
-                 #                                                                flags=hikari.MessageFlag.EPHEMERAL),
-                 lightbulb.errors.CommandIsOnCooldown:await event.context.respond(f"Hey! You gotta wait a bit before you do this command again!\nPlease wait **{event.exception.retry_after:.0f}** second(s) before trying again.",
-                                                                                  flags=hikari.MessageFlag.EPHEMERAL),
-                 lightbulb.errors.MissingRequiredPermission:await event.context.respond("Hey! You don't have the permissions to do this here!",
-                                                                                        flags=hikari.MessageFlag.EPHEMERAL),
-                 lightbulb.errors.BotMissingRequiredPermission:await event.context.respond("Uhhh.. No can do...\nI don't have the permissions to do that ^^'",
-                                                                                           flags=hikari.MessageFlag.EPHEMERAL),
-                 lightbulb.errors.CheckFailure: None}
+    #TODO: Find 'missing_options' proper syntax pls Zed
+    error_dict = {
+        lightbulb.errors.CommandNotFound:None,
+        #lightbulb.errors.NotEnoughArguments:await event.context.respond("Some arguments are missing: "+", ".join(event.exception.missing_options),
+        #                                                                flags=hikari.MessageFlag.EPHEMERAL),
+        lightbulb.errors.CommandIsOnCooldown:await event.context.respond(f"Hey! You gotta wait a bit before you do this command again!\nPlease wait **{event.exception.retry_after:.0f}** second(s) before trying again.",
+                                                                        flags=hikari.MessageFlag.EPHEMERAL),
+        lightbulb.errors.MissingRequiredPermission:await event.context.respond("Hey! You don't have the permissions to do this here!",
+                                                                            flags=hikari.MessageFlag.EPHEMERAL),
+        lightbulb.errors.BotMissingRequiredPermission:await event.context.respond("Uhhh.. No can do...\nI don't have the permissions to do that ^^'",
+                                                                                flags=hikari.MessageFlag.EPHEMERAL),
+        lightbulb.errors.CheckFailure: None
+        }
 
     if isinstance(event.exception.__cause__, hikari.ForbiddenError):
         await event.context.respond("Something is missing perms or missed ids...",
@@ -58,8 +71,8 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
         except KeyError:
             await event.context.respond("Ohhh no.. some error has happend and I'm not sure what it is o.o\nit might be something the following:\n - The command no workie.\n - The command is under maintenance (Goddamit Zed).\n - You didn't use the command correctly (/help to view command stuffs)",
                                         flags=hikari.MessageFlag.EPHEMERAL)
-            raise event.exception        
-
+            raise event.exception
+        
 
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
@@ -115,13 +128,14 @@ async def toaster(ctx):
 async def cat(ctx):
     cat_filter = f'?filter={ctx.options.filter}'
     text = f"/says/{ctx.options.text}"
+    options = f"{ctx.options.gif}"
+    fmat_type = "png"
     if ctx.options.text == "":
         text = ""
-    options = f"{ctx.options.gif}"
-    cat_url = f"https://cataas.com/cat{options}{text}{cat_filter}"
-    fmat_type = "png"
     if ctx.options.gif != "":
         fmat_type = "gif"
+    cat_url = f"https://cataas.com/cat{options}{text}{cat_filter}"
+    
     try:
         response = requests.get(cat_url, stream=True, timeout=5)
         response.raise_for_status()
@@ -131,8 +145,11 @@ async def cat(ctx):
 
         await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
         
+        if dev_mode != True:
+            os.remove(f"temp_cat.{fmat_type}")
+        
     except requests.exceptions.ConnectionError:
-        await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot', flags=hikari.MessageFlag.EPHEMERAL)
+        await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot')
 
 @bot.command
 @lightbulb.option('text',
@@ -157,6 +174,6 @@ async def suggest(ctx):
         
 
 # Any plugin with the extention .py.off will not be implemented
-# the .off has no particular funtion, lightbulb just doesn't recognise it
+# the .off has no particular funtion, lightbulb just doesn't recognise it haha
 bot.load_extensions_from("./plugins")
 bot.run()

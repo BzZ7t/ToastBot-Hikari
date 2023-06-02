@@ -12,11 +12,12 @@ def get_welcome(ctx):
         jsn_welcome = json.load(json_file)
     return jsn_welcome
 
+#TODO: WHY THEGFTGUJRFTURFYUR6YU8FYDSRTHFJFRSTYH
 @plugin.listener(hikari.MemberCreateEvent)
-async def welcome_join(ctx):
+async def welcome_join(ctx: lightbulb.context) -> None:
     try:
-        file = get_welcome(ctx)
-        await plugin.rest.create_message(file['welcome_channel'], file['welcome_txt'])
+        file = await get_welcome(ctx)
+        await ctx.respond(file['welcome_channel'], file['welcome_txt'])
         
     except FileNotFoundError:
         pass
@@ -35,9 +36,11 @@ async def setup():
 @lightbulb.option('channel',
                   'set the welcome channel',
                   required=True)
+@lightbulb.add_checks(lightbulb.checks.owner_only,#TODO: Remove once finished
+                      lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command('welcome',
                    'set up a welcome channel') 
-@lightbulb.implements(lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def welcome(ctx):
     message = ctx.options.message
     server = ctx.get_guild().id
@@ -54,7 +57,7 @@ async def welcome(ctx):
     for x in chara_rem:
         channel_id = channel_id.replace(x,'') 
         # Yes its dirty. I'm aware that they may be a command behavour to fix this, no clue what it is tho
-
+        #TODO: Find that shit
     if not os.path.exists(newpath):
         os.makedirs(newpath)
     

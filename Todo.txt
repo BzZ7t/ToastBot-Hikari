@@ -5,10 +5,7 @@ This is a simple Todo list of all the fearures I wanna work on
 • implement a ChatGPT type function
 • /quotes suggested by Kohvi<3
 • implement Tenor into /interact for gifs 
-• add https://cataas.com/#/ as /cat
 
-April fools
-• Call everyone a furry
 
 Don't forget the individual TODO's in code
 and dont be a YandereDev
