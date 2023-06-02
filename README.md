@@ -1,10 +1,11 @@
 # ToastBot-Hikari
+
 An all-purpose bot for discord made in Python with Hikari!
 
-# Current Commands
+## Current Commands
+
 ```
 /ping: Says 'Pong!' followed by the bot latency
-
 
 /mod:
 ---> kick: kick a member from the server
@@ -20,6 +21,8 @@ An all-purpose bot for discord made in Python with Hikari!
 /help: Get a list of all commands
 /donate: Get my creator's Ko-Fi page!
 ```
-## Keep me free without any freemium subcription by supporting my creator on Ko-Fi!
-https://ko-fi.com/bzz7t
+
+## Keep me free without any freemium subcription by supporting my creator on Ko-Fi
+
+<https://ko-fi.com/bzz7t>
 Thank you!

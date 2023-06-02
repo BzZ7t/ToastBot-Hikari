@@ -24,17 +24,42 @@ miru.install(bot)
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
     print('''                                   
-                                                                                                     
+
             🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
             🍞🍞╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝🍞🍞
             🍞🍞░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░🍞🍞
             🍞🍞░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░🍞🍞
             🍞🍞░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░🍞🍞
             🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
-                                                                                        ''')
+                                                                                        
+''')
     
+@bot.listen(lightbulb.CommandErrorEvent)
+async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
+    error_dict = {lightbulb.errors.CommandNotFound:None,
+                 lightbulb.errors.NotEnoughArguments:await event.context.respond("Some arguments are missing: "+", ".join(event.exception.missing_options),
+                                                                                 flags=hikari.MessageFlag.EPHEMERAL),
+                 lightbulb.errors.CommandIsOnCooldown:await event.context.respond(f"Hey! You gotta wait a bit before you do this command again!\nPlease wait **{event.exception.retry_after:.0f}** second(s) before trying again.",
+                                                                                  flags=hikari.MessageFlag.EPHEMERAL),
+                 lightbulb.errors.MissingRequiredPermission:await event.context.respond("Hey! You don't have the permissions to do this here!",
+                                                                                        flags=hikari.MessageFlag.EPHEMERAL),
+                 lightbulb.errors.BotMissingRequiredPermission:await event.context.respond("Uhhh.. No can do...\nI don't have the permissions to do that ^^'",
+                                                                                           flags=hikari.MessageFlag.EPHEMERAL),
+                 lightbulb.errors.CheckFailure: None}
 
-    
+    if isinstance(event.exception.__cause__, hikari.ForbiddenError):
+        await event.context.respond("Something is missing perms or missed ids...",
+                                    flags=hikari.MessageFlag.EPHEMERAL)
+        raise event.exception
+
+    else:
+        try:
+            return error_dict[event.exception]
+        except KeyError:
+            await event.context.respond("Ohhh no.. some error has happend and I'm not sure what it is o.o\nit might be something the following:\n - The command no workie.\n - The command is under maintenance (Goddamit Zed).\n - You didn't use the command correctly (/help to view command stuffs)",
+                                        flags=hikari.MessageFlag.EPHEMERAL)
+            raise event.exception        
+
 
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
