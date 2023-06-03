@@ -14,16 +14,18 @@ from PIL import Image
 
 #/#/#/#/#/#/#/#/#/#/#/#/# ---> Loading the bot
 print("Fix your code")
-intents = hikari.Intents
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
-bot = lightbulb.BotApp(token=TOKEN, intents=intents)
+bot = lightbulb.BotApp(token=TOKEN,
+                       intents=hikari.Intents.ALL,
+                       help_slash_command=True,
+                       ignore_bots=True)
 miru.install(bot)
 
 #/#/#/#/#/#/#/# ---> Varibles
 global dev_mode
 dev_mode = True
-
+toastbot_log = 1114676105312489554
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
 async def get_welcome(ctx): #TODO: Make this into a 'get_json()' in the future
     server = ctx.get_guild().id
@@ -31,8 +33,14 @@ async def get_welcome(ctx): #TODO: Make this into a 'get_json()' in the future
         jsn_welcome = json.load(json_file)
     return jsn_welcome
 
+
+@bot.listen(hikari.StartingEvent)
+async def startingup(event):
+    await bot.rest.create_message(toastbot_log, "ToastBot is starting up....")
+
 @bot.listen(hikari.StartedEvent)#--------> When bot has started
 async def startup(event):
+    await bot.rest.create_message(toastbot_log, "ToastBot is online!\nGood morning!")
     print('''                                   
 
             🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
@@ -43,36 +51,53 @@ async def startup(event):
             🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
                                                                                         
 ''')
-    
+  
+@bot.listen(hikari.StoppingEvent)
+async def poweringdown(event):
+    await bot.rest.create_message(toastbot_log, "ToastBot is starting to powerdown...")
+
+@bot.listen(hikari.StoppingEvent)
+async def powereddown(event):
+    await bot.rest.create_message(toastbot_log, "Powered down..\nGoodnight<3")
+
+#TODO: I hate this, oh god how I hate this. YANDEV GET OUT MY HEEEAAAAADDDDD  
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
-    #TODO: Find 'missing_options' proper syntax pls Zed
-    error_dict = {
-        lightbulb.errors.CommandNotFound:None,
-        #lightbulb.errors.NotEnoughArguments:await event.context.respond("Some arguments are missing: "+", ".join(event.exception.missing_options),
-        #                                                                flags=hikari.MessageFlag.EPHEMERAL),
-        lightbulb.errors.CommandIsOnCooldown:await event.context.respond(f"Hey! You gotta wait a bit before you do this command again!\nPlease wait **{event.exception.retry_after:.0f}** second(s) before trying again.",
-                                                                        flags=hikari.MessageFlag.EPHEMERAL),
-        lightbulb.errors.MissingRequiredPermission:await event.context.respond("Hey! You don't have the permissions to do this here!",
-                                                                            flags=hikari.MessageFlag.EPHEMERAL),
-        lightbulb.errors.BotMissingRequiredPermission:await event.context.respond("Uhhh.. No can do...\nI don't have the permissions to do that ^^'",
-                                                                                flags=hikari.MessageFlag.EPHEMERAL),
-        lightbulb.errors.CheckFailure: None
-        }
+    print(event.exception)
+    if isinstance(event.exception, lightbulb.errors.CommandNotFound):
+        return None
+
+    if isinstance(event.exception, lightbulb.errors.NotEnoughArguments):
+        return await event.context.respond("Some arguments are missing: "+ ", ".join(event.exception.missing_options),
+                                           flags=hikari.MessageFlag.EPHEMERAL)
+        
+    if isinstance(event.exception, lightbulb.errors.NotEnoughArguments):
+        return await event.context.respond("Too many arguments were passed.",
+                                           flags=hikari.MessageFlag.EPHEMERAL)
+
+    if isinstance(event.exception, lightbulb.errors.CommandIsOnCooldown):
+        return await event.context.respond(f"Hey! You gotta wait a bit before you do this command again!\nPlease wait {event.exception.retry_after:.0f} second/s before trying again.",
+                                           flags=hikari.MessageFlag.EPHEMERAL)
+
+    if isinstance(event.exception, lightbulb.errors.MissingRequiredPermission):
+        return await event.context.respond(f"Hey! You don't have the permissions to do this here!\nPermission/s: `{event.exception.missing_perms}`",
+                                           flags=hikari.MessageFlag.EPHEMERAL)
+
+    if isinstance(event.exception, lightbulb.errors.BotMissingRequiredPermission):
+        return await event.context.respond(f"I don't have the permissions to do that ^^'\nPermission/s: {event.exception.missing_perms}",
+                                           flags=hikari.MessageFlag.EPHEMERAL)
 
     if isinstance(event.exception.__cause__, hikari.ForbiddenError):
-        await event.context.respond("Something is missing perms or missed ids...",
+        await event.context.respond("Something is missing perms or missed ids.\n this message will always show up no matter the error and I don't have a flying shit why\nIf you used a /mod command, you don't have the correct permissions -Zed",
                                     flags=hikari.MessageFlag.EPHEMERAL)
         raise event.exception
 
-    else:
-        try:
-            return error_dict[event.exception]
-        except KeyError:
-            await event.context.respond("Ohhh no.. some error has happend and I'm not sure what it is o.o\nit might be something the following:\n - The command no workie.\n - The command is under maintenance (Goddamit Zed).\n - You didn't use the command correctly (/help to view command stuffs)",
+    if isinstance(event.exception, lightbulb.errors.CheckFailure):
+        return None
+    
+    await event.context.respond("Ohhh no.. some error has happend and I'm not sure what it is o.o\nit might be something the following:\n - The command no workie.\n - The command is under maintenance (Goddamit Zed).\n - You didn't use the command correctly (/help to view command stuffs)",
                                         flags=hikari.MessageFlag.EPHEMERAL)
-            raise event.exception
-        
+    raise event.exception
 
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
@@ -82,7 +107,7 @@ async def ping(ctx):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
 @bot.command
-@lightbulb.command('help',
+@lightbulb.command('help-test',
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):

@@ -4,7 +4,7 @@ import os
 import hikari
 import lightbulb
 
-plugin = lightbulb.Plugin('setup')
+plugin = lightbulb.Plugin('setup', default_enabled_guilds=1011278408770146374)
 
 def get_welcome(ctx):
     server = ctx.get_guild().id
@@ -12,8 +12,8 @@ def get_welcome(ctx):
         jsn_welcome = json.load(json_file)
     return jsn_welcome
 
-#TODO: WHY THEGFTGUJRFTURFYUR6YU8FYDSRTHFJFRSTYH
-@plugin.listener(hikari.MemberCreateEvent)
+#TODO: how do I fix this?
+'''@plugin.listener(hikari.MemberCreateEvent)
 async def welcome_join(ctx: lightbulb.context) -> None:
     try:
         file = await get_welcome(ctx)
@@ -21,6 +21,7 @@ async def welcome_join(ctx: lightbulb.context) -> None:
         
     except FileNotFoundError:
         pass
+'''
 
 @plugin.command
 @lightbulb.command('setup',
@@ -65,7 +66,7 @@ async def welcome(ctx):
     with file_location as json_file:
         json.dump(file,json_file, indent=2)
         
-    await ctx.respond(f'A welcome channel has been set to {channel}\n{message}')
+    await ctx.respond(f'A welcome channel has been set to {channel}\nwith message:\n- {message}')
 
 def load(bot):
     bot.add_plugin(plugin)
