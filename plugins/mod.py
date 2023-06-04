@@ -32,7 +32,8 @@ async def mod():
                   default='No reason given')
 @lightbulb.option("user",
                   "Who is the user you would like to ban?",
-                  required=True,)
+                  hikari.Member,
+                  required=True)
 @lightbulb.command('ban',
                    'ban a member from the server')
 @lightbulb.implements(lightbulb.SlashSubCommand)
@@ -55,6 +56,7 @@ async def ban(ctx):
                   default='No reason given')
 @lightbulb.option("user",
                   "Who is the user you would like to kick?",
+                  hikari.Member,
                   required=True)
 @lightbulb.command('kick',
                    'kick a member from the server')

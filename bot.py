@@ -27,9 +27,8 @@ global dev_mode
 dev_mode = True
 toastbot_log = 1114676105312489554
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
-async def get_welcome(ctx): #TODO: Make this into a 'get_json()' in the future
-    server = ctx.get_guild().id
-    with open(f'server_save/{server}/welcome.json', 'r', encoding='utf-8') as json_file:
+async def get_json(server, file): #TODO: Make this into a 'get_json()' in the future
+    with open(f'server_save/{server}/{file}.json', 'r', encoding='utf-8') as json_file:
         jsn_welcome = json.load(json_file)
     return jsn_welcome
 
@@ -99,6 +98,27 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
                                         flags=hikari.MessageFlag.EPHEMERAL)
     raise event.exception
 
+@bot.listen(hikari.MemberCreateEvent)
+async def welcome_join(event: hikari.MemberCreateEvent) -> None:
+    user = event.member.mention
+    try:
+        file = await get_json(event.guild_id,'welcome')
+        await bot.rest.create_message(file['welcome_channel_id'], file['welcome_txt'].format(user=user),
+                                      user_mentions=True)
+        
+    except FileNotFoundError:
+        pass
+    
+@bot.listen(hikari.MemberDeleteEvent)
+async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
+    user = event.user.mention
+    try:
+        file = await get_json(event.guild_id,'goodbye')
+        await bot.rest.create_message(file['goodbye_channel_id'], file['goodbye_txt'].format(user=user))
+        
+    except FileNotFoundError:
+        pass
+
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
                    'Says "pong!" followed by bot latency')
@@ -132,7 +152,7 @@ async def toaster(ctx):
 #-> Uses CAAS API to get a random image of a cat
 @bot.command
 @lightbulb.option('filter',
-                  'add a filter',
+                  "add a filter (Keep in mind, some don't work with gifs)",
                   required=False,
                   default="none",
                   choices=['blur','mono','sepia','negative','paint','pixel'])
@@ -153,28 +173,46 @@ async def toaster(ctx):
 async def cat(ctx):
     cat_filter = f'?filter={ctx.options.filter}'
     text = f"/says/{ctx.options.text}"
-    options = f"{ctx.options.gif}"
+    gif = f"{ctx.options.gif}"
     fmat_type = "png"
     if ctx.options.text == "":
         text = ""
     if ctx.options.gif != "":
         fmat_type = "gif"
-    cat_url = f"https://cataas.com/cat{options}{text}{cat_filter}"
+    cat_url = f"https://cataas.com/cat{gif}{text}{cat_filter}"
+    
+    await ctx.respond('Getting catto...', flags=hikari.MessageFlag.EPHEMERAL)
     
     try:
+        
         response = requests.get(cat_url, stream=True, timeout=5)
         response.raise_for_status()
         with Image.open(BytesIO(response.content)) as im:
             im.thumbnail((1024, 1024))
             im.save("temp_cat." + fmat_type, save_all=True)
 
-        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}"))
+        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
         
         if dev_mode != True:
             os.remove(f"temp_cat.{fmat_type}")
         
+    except requests.exceptions.HTTPError:
+        cat_url = f"https://cataas.com/cat{text}{cat_filter}"
+        response = requests.get(cat_url, stream=True, timeout=5)
+        response.raise_for_status()
+        with Image.open(BytesIO(response.content)) as im:
+            im.thumbnail((1024, 1024))
+            im.save("temp_cat." + fmat_type, save_all=True)
+
+        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+        await ctx.respond("You can't use this filter with a gif!\nI've given a still image instead",
+                          flags=hikari.MessageFlag.EPHEMERAL)
+        
     except requests.exceptions.ConnectionError:
         await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot')
+    
+        
+
 
 @bot.command
 @lightbulb.option('text',
