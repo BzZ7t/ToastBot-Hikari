@@ -5,6 +5,7 @@ This is a simple Todo list of all the fearures I wanna work on
 • implement a ChatGPT type function
 • /quotes suggested by Kohvi<3
 • implement Tenor into /interact for gifs 
+• ticket system
 
 
 Don't forget the individual TODO's in code
