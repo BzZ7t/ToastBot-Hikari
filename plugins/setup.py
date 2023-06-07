@@ -36,7 +36,7 @@ async def json_write(ctx,dictionary,type):
     file_location = r"server_save/{server}.json".format(server=server)
     with open(file_location,"w+", encoding="utf-8") as fs:
         json_file = json.load(fs)
-        json.dump(json_file,fs,indent=2)
+        json.dump(json_file,file_location,indent=2)
     
     
 async def json_erase(ctx, key, key_value):
