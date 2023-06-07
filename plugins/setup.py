@@ -7,42 +7,28 @@ import lightbulb
 #from bot import get_json
 
 plugin = lightbulb.Plugin('setup')
-"""
-async def json_write(ctx, key, key_value, type):
+
+
+async def json_write(ctx,dic):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
-    file_location = open(file_location,"w+", encoding="utf-8")
-    
-    with file_location:
-        if isinstance(key_value, str) and key_value.lower() == 'reset':
-            try:
-                json_open = json.load(file_location)
-                json_open.pop(key)
-            except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
-                pass
-            return await ctx.respond(f"'{type}' settings have been reset")
-
-        try:
-            json_file = json.load(file_location)
-            dicc = {key:key_value}
-            json_file.update(dicc)
-        except json.decoder.JSONDecodeError:
-            json_file = {key:key_value}
-        json.dump(json_file,file_location, indent=2)
-"""
-
-async def json_write(ctx,dictionary,type):
-    server = ctx.get_guild().id
-    file_location = r"server_save/{server}.json".format(server=server)
-    with open(file_location,"w+", encoding="utf-8") as fs:
-        json_file = json.load(fs)
-        json.dump(json_file,file_location,indent=2)
+    try:
+        with open(file_location,'r+', encoding="utf-8") as fs:
+            json_file = json.load(fs)
+            json_file = json_file | dic       
+            fs =  open(file_location,'w', encoding="utf-8")
+            json.dump(json_file,fs,indent=2)
+    except FileNotFoundError:
+            with open(file_location,'x', encoding="utf-8") as fs:
+                print('fuck yes')
+                json_file = dic
+                json.dump(json_file,fs,indent=2)
     
     
 async def json_erase(ctx, key, key_value):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
-    file_location = open(file_location,"w+", encoding="utf-8")
+    file_location = open(file_location,"w", encoding="utf-8")
     
     if isinstance(key_value, str) and key_value.lower() == 'reset':
             try:
@@ -69,17 +55,16 @@ async def welcome(ctx):
     user = ctx.author.mention
     message = ctx.options.message
     channel = ctx.options.channel
-    
-    if message.lower() == 'help':
-        return await ctx.respond()
-    welcome_dict = {
+    dict = {
         "welcome_channel":channel.id,
         "welcome_txt":message
     }
     
-    await json_write(ctx,welcome_dict,"welcome")
+    if message.lower() == 'help':
+        return await ctx.respond()
 
     await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
+    await json_write(ctx,dict)
     #await json_write(ctx,"welcome_channel",channel.id,'welcome')
     #await json_write(ctx,"welcome_txt",message,'welcome')
     await ctx.edit_last_response(f"welcome channel has successfully been set to {channel}\n- {message.format(user=user)}")
@@ -100,9 +85,16 @@ async def goodbye(ctx):
     user = ctx.author.mention
     message = ctx.options.message
     channel = ctx.options.channel
+    dict = {
+        "goodbye_channel":channel.id,
+        "goodbye_txt":message
+    }
     
+    if message.lower() == 'help':
+        return await ctx.respond()
     
-    await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")
+    await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")    
+    await json_write(ctx,dict)
     await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel}\n- {message.format(user=user)}")
 
 
