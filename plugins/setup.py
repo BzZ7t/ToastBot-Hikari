@@ -35,11 +35,8 @@ async def json_write(ctx,dictionary,type):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
     with open(file_location,"w+", encoding="utf-8") as fs:
-        try:
-            json_file = json.load(file_location)
+        json_file = json.load(file_location)
             json.dump(json_file,file_location,indent=2)
-        except Exception as e:
-            print(e)
     
     
 async def json_erase(ctx, key, key_value):
