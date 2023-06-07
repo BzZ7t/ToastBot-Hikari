@@ -7,7 +7,7 @@ import lightbulb
 #from bot import get_json
 
 plugin = lightbulb.Plugin('setup')
-
+"""
 async def json_write(ctx, key, key_value, type):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
@@ -29,8 +29,24 @@ async def json_write(ctx, key, key_value, type):
         except json.decoder.JSONDecodeError:
             json_file = {key:key_value}
         json.dump(json_file,file_location, indent=2)
+"""
 
-            
+def json_write(ctx,dictionary,type):
+    server = ctx.get_guild().id
+    file_location = r"server_save/{server}.json".format(server=server)
+    with open(file_location,"w+", encoding="utf-8") as fs:
+        if isinstance(key_value, str) and key_value.lower() == 'reset':
+            try:
+                json_open = json.load(file_location)
+                json_open.pop(key)
+            except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
+                pass
+            return await ctx.respond(f"'{type}' settings have been reset")
+        try:
+            json_file = json.load(file_location)
+            json.dump(json_file,file_location,indent=2)
+        except Exception as e:
+            print(e)
     
     
 #TODO: Simplify how you simplified /interact
@@ -53,10 +69,16 @@ async def welcome(ctx):
     
     if message.lower() == 'help':
         return await ctx.respond()
+    welcome_dict = {
+        "welcome_channel":channel.id,
+        "welcome_txt":message
+    }
     
+    await json_write(ctx,welocme_dict,"welcome")
+
     await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
-    await json_write(ctx,"welcome_channel",channel.id,'welcome')
-    await json_write(ctx,"welcome_txt",message,'welcome')
+    #await json_write(ctx,"welcome_channel",channel.id,'welcome')
+    #await json_write(ctx,"welcome_txt",message,'welcome')
     await ctx.edit_last_response(f"welcome channel has successfully been set to {channel}\n- {message.format(user=user)}")
 
 @plugin.command
@@ -75,6 +97,7 @@ async def goodbye(ctx):
     user = ctx.author.mention
     message = ctx.options.message
     channel = ctx.options.channel
+    
     
     await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")
     await json_write(ctx,"goodbye_channel",channel,'goodbye')
