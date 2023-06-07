@@ -1,6 +1,6 @@
 # ToastBot-Hikari
 
-An all-purpose bot for discord made in Python with Hikari!
+An all-purpose bot for discord made in Python with Hikari! (still very early version but this is the most "stable" release)
 
 ## Current Commands
 
