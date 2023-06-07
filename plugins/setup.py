@@ -35,13 +35,6 @@ async def json_write(ctx,dictionary,type):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
     with open(file_location,"w+", encoding="utf-8") as fs:
-        if isinstance(key_value, str) and key_value.lower() == 'reset':
-            try:
-                json_open = json.load(file_location)
-                json_open.pop(key)
-            except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
-                pass
-            return await ctx.respond(f"'{type}' settings have been reset")
         try:
             json_file = json.load(file_location)
             json.dump(json_file,file_location,indent=2)
@@ -49,6 +42,19 @@ async def json_write(ctx,dictionary,type):
             print(e)
     
     
+async def json_erase(ctx, key, key_value):
+    server = ctx.get_guild().id
+    file_location = r"server_save/{server}.json".format(server=server)
+    file_location = open(file_location,"w+", encoding="utf-8")
+    
+    if isinstance(key_value, str) and key_value.lower() == 'reset':
+            try:
+                json_open = json.load(file_location)
+                json_open.pop(key)
+            except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
+                pass
+            return await ctx.respond(f"'{type}' settings have been reset")  
+
 #TODO: Simplify how you simplified /interact
 @plugin.command
 @lightbulb.option('message',
