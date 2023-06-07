@@ -31,7 +31,7 @@ async def json_write(ctx, key, key_value, type):
         json.dump(json_file,file_location, indent=2)
 """
 
-def json_write(ctx,dictionary,type):
+async def json_write(ctx,dictionary,type):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
     with open(file_location,"w+", encoding="utf-8") as fs:
