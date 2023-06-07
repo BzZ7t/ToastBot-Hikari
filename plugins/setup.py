@@ -1,5 +1,4 @@
 import json
-import os
 
 import hikari
 import lightbulb
@@ -8,6 +7,40 @@ import lightbulb
 
 plugin = lightbulb.Plugin('setup')
 
+
+async def json_write(ctx,dic):
+    server = ctx.get_guild().id
+    file_location = r"server_save/{server}.json".format(server=server)
+    try:
+        with open(file_location,'r+', encoding="utf-8") as fs:
+            json_file = json.load(fs)
+            json_file = json_file | dic       
+            fs =  open(file_location,'w', encoding="utf-8")
+            json.dump(json_file,fs,indent=2)
+    except FileNotFoundError or json.decoder.JSONDecodeError:
+            with open(file_location,'x', encoding="utf-8") as fs:
+                print('fuck yes')
+                json_file = dic
+                json.dump(json_file,fs,indent=2)
+    
+    
+async def json_erase(ctx, key_list):
+    server = ctx.get_guild().id
+    file_location = r"server_save/{server}.json".format(server=server)
+    
+    try:
+        with open(file_location,'r+', encoding="utf-8") as fs:
+            json_file = json.load(fs)
+            for x in key_list:  # This is fucking jank, TODO: Make this not jank
+                try:
+                    del json_file[x]
+                except KeyError:
+                    return
+            fs = open(file_location,'w', encoding="utf-8")
+            json.dump(json_file,fs,indent=2)
+    except FileNotFoundError or json.decoder.JSONDecodeError or KeyError:
+        pass
+    
 
 #TODO: Simplify how you simplified /interact
 @plugin.command
@@ -25,35 +58,22 @@ plugin = lightbulb.Plugin('setup')
 async def welcome(ctx):
     user = ctx.author.mention
     message = ctx.options.message
-    server = ctx.get_guild().id
     channel = ctx.options.channel
-    file = {
-        "welcome_channel_id":channel.id,
-        "welcome_txt":message,
-        }
-    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
-    
-    
-    if message.lower() == 'help':
-        return await ctx.respond('Here is the syntax for the welcome command;\n{user} - mentions the user')
+    dict = {"welcome_channel":channel.id,
+            "welcome_txt":message}
     
     if message.lower() == 'reset':
-        try:
-            os.remove(f"server_save/{server}/welcome.json")
-        except FileNotFoundError:
-            pass
-        return await ctx.respond("'welcome' settings have been reset")
-    
-    await ctx.respond(f'A welcome channel has been set to {channel.mention}\nwith message:\n{message.format(user=user)}')
-    
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-    
-    file_location = open(f'server_save/{server}/welcome.json', 'w', encoding='utf-8')
-    with file_location as json_file:
-        json.dump(file,json_file, indent=2)
-        
-    
+        erase_list = ['welcome_channel','welcome_txt']
+        await json_erase(ctx, erase_list)
+        return await ctx.respond('welcome messsage has been reset')
+    if message.lower() == 'help':
+        return await ctx.respond("`halp`")
+
+    await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
+    await json_write(ctx,dict)
+    await ctx.edit_last_response(f"welcome channel has successfully been set to {channel.mention}\n- {message.format(user=user)}", 
+                                 user_mentions=False)
+
 @plugin.command
 @lightbulb.option('message',
                   'set a message (type "reset" to reset, for mentions and other syntax, type "help" for more details)',
@@ -69,33 +89,24 @@ async def welcome(ctx):
 async def goodbye(ctx):
     user = ctx.author.mention
     message = ctx.options.message
-    server = ctx.get_guild().id
     channel = ctx.options.channel
-    file = {
-        "goodbye_channel_id":channel.id,
-        "goodbye_txt":message,
-        }
-    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
-    
-    if message.lower() == 'help':
-        return await ctx.respond('Here is the syntax for the goodbye command;\n{user} - mentions the user')
+    dict = {
+        "goodbye_channel":channel.id,
+        "goodbye_txt":message
+    }
     
     if message.lower() == 'reset':
-        try:
-            os.remove(f"server_save/{server}/goodbye.json")
-        except FileNotFoundError:
-            pass
-        return await ctx.respond("'goodbye' settings have been reset")
+        erase_list = ['goodbye_channel','goodbye_txt']
+        await json_erase(ctx, erase_list)
+        return await ctx.respond('goodbye messsage has been reset')
+    if message.lower() == 'help':
+        return await ctx.respond()
     
-    await ctx.respond(f'A goodbye channel has been set to {channel.mention}\nwith message:\n{message.format(user=user)}')
+    await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")    
+    await json_write(ctx,dict)
+    await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel.mention}\n- {message.format(user=user)}",
+                                 user_mentions = False)
 
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-    
-    file_location = open(f'server_save/{server}/goodbye.json', 'w', encoding='utf-8')
-    with file_location as json_file:
-        json.dump(file,json_file, indent=2)
-        
 
 def load(bot):
     bot.add_plugin(plugin)
