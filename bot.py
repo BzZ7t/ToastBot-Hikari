@@ -18,7 +18,6 @@ load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 bot = lightbulb.BotApp(token=TOKEN,
                        intents=hikari.Intents.ALL,
-                       help_slash_command=True,
                        ignore_bots=True)
 miru.install(bot)
 
@@ -127,7 +126,7 @@ async def ping(ctx):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
 @bot.command
-@lightbulb.command('help-test',
+@lightbulb.command('help',
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx):
