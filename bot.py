@@ -26,10 +26,10 @@ global dev_mode
 dev_mode = False
 toastbot_log = 1114676105312489554
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
-async def get_json(server,key):
+async def get_json(server, key):
     with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
         jsn = json.load(json_file)
-    return jsn
+    return jsn[key]
 
 
 @bot.listen(hikari.StartingEvent)
