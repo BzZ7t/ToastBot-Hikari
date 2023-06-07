@@ -35,8 +35,8 @@ async def json_write(ctx,dictionary,type):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
     with open(file_location,"w+", encoding="utf-8") as fs:
-        json_file = json.load(file_location)
-        json.dump(json_file,file_location,indent=2)
+        json_file = json.load(fs)
+        json.dump(json_file,fs,indent=2)
     
     
 async def json_erase(ctx, key, key_value):
@@ -103,8 +103,6 @@ async def goodbye(ctx):
     
     
     await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")
-    await json_write(ctx,"goodbye_channel",channel,'goodbye')
-    await json_write(ctx,"goodbye_txt",message,'goodbye') 
     await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel}\n- {message.format(user=user)}")
 
 
