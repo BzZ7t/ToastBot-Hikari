@@ -27,10 +27,10 @@ global dev_mode
 dev_mode = True
 toastbot_log = 1114676105312489554
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
-async def get_json(server, file): #TODO: Make this into a 'get_json()' in the future
-    with open(f'server_save/{server}/{file}.json', 'r', encoding='utf-8') as json_file:
-        jsn_welcome = json.load(json_file)
-    return jsn_welcome
+async def get_json(server,key):
+    with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
+        jsn = json.load(json_file)
+    return jsn
 
 
 @bot.listen(hikari.StartingEvent)
@@ -94,16 +94,18 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
     if isinstance(event.exception, lightbulb.errors.CheckFailure):
         return None
     
-    await event.context.respond("Ohhh no.. some error has happend and I'm not sure what it is o.o\nit might be something the following:\n - The command no workie.\n - The command is under maintenance (Goddamit Zed).\n - You didn't use the command correctly (/help to view command stuffs)",
+    else:
+        await event.context.respond("Ohhh no.. some error has happend and I'm not sure what it is o.o\nit might be something the following:\n - The command no workie.\n - The command is under maintenance (Goddamit Zed).\n - You didn't use the command correctly (/help to view command stuffs)",
                                         flags=hikari.MessageFlag.EPHEMERAL)
-    raise event.exception
+        raise event.exception
 
 @bot.listen(hikari.MemberCreateEvent)
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
     user = event.member.mention
     try:
-        file = await get_json(event.guild_id,'welcome')
-        await bot.rest.create_message(file['welcome_channel_id'], file['welcome_txt'].format(user=user),
+        channel = await get_json(event.guild_id,'welcome_channel')
+        txt = await get_json(event.guild_id,'welcome_txt')
+        await bot.rest.create_message(channel, txt.format(user=user),
                                       user_mentions=True)
         
     except FileNotFoundError:
@@ -113,8 +115,10 @@ async def welcome_join(event: hikari.MemberCreateEvent) -> None:
 async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
     user = event.user.mention
     try:
-        file = await get_json(event.guild_id,'goodbye')
-        await bot.rest.create_message(file['goodbye_channel_id'], file['goodbye_txt'].format(user=user))
+        channel = await get_json(event.guild_id,'goodbye_channel')
+        txt = await get_json(event.guild_id,'goodbye_txt')
+        await bot.rest.create_message(channel, txt.format(user=user),
+                                      user_mentions=True)
         
     except FileNotFoundError:
         pass
@@ -180,7 +184,7 @@ async def cat(ctx):
     if ctx.options.gif != "":
         fmat_type = "gif"
     cat_url = f"https://cataas.com/cat{gif}{text}{cat_filter}"
-    
+        
     await ctx.respond('Getting catto...', flags=hikari.MessageFlag.EPHEMERAL)
     
     try:

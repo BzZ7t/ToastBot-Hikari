@@ -6,9 +6,32 @@ import lightbulb
 
 #from bot import get_json
 
-plugin = lightbulb.Plugin('setup')
+plugin = lightbulb.Plugin('setup', default_enabled_guilds=1011278408770146374)
 
+async def json_write(ctx, key, key_value, type):
+    server = ctx.get_guild().id
+    json_file = open(f'server_save/{server}.json', 'a+', encoding='utf-8')
+    
 
+    if isinstance(key_value, str) and key_value.lower() == 'reset':
+        try:
+            jsn.pop(key)
+        except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
+            pass
+        return await ctx.respond(f"'{type}' settings have been reset")
+
+    with json_file as jsn:
+        try:
+            fille = json.load(jsn)
+            dicc = {key:key_value}
+            fille.update(dicc)
+        except json.decoder.JSONDecodeError:
+            fille = {key:key_value}
+        json.dump(fille,jsn, indent=2)
+
+            
+    
+    
 #TODO: Simplify how you simplified /interact
 @plugin.command
 @lightbulb.option('message',
@@ -25,35 +48,16 @@ plugin = lightbulb.Plugin('setup')
 async def welcome(ctx):
     user = ctx.author.mention
     message = ctx.options.message
-    server = ctx.get_guild().id
     channel = ctx.options.channel
-    file = {
-        "welcome_channel_id":channel.id,
-        "welcome_txt":message,
-        }
-    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
-    
     
     if message.lower() == 'help':
-        return await ctx.respond('Here is the syntax for the welcome command;\n{user} - mentions the user')
+        return await ctx.respond()
     
-    if message.lower() == 'reset':
-        try:
-            os.remove(f"server_save/{server}/welcome.json")
-        except FileNotFoundError:
-            pass
-        return await ctx.respond("'welcome' settings have been reset")
-    
-    await ctx.respond(f'A welcome channel has been set to {channel.mention}\nwith message:\n{message.format(user=user)}')
-    
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-    
-    file_location = open(f'server_save/{server}/welcome.json', 'w', encoding='utf-8')
-    with file_location as json_file:
-        json.dump(file,json_file, indent=2)
-        
-    
+    await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
+    await json_write(ctx,"welcome_channel",channel.id,'welcome')
+    await json_write(ctx,"welcome_txt",message,'welcome')
+    await ctx.edit_last_response(f"welcome channel has successfully been set to {channel}\n- {message.format(user=user)}")
+
 @plugin.command
 @lightbulb.option('message',
                   'set a message (type "reset" to reset, for mentions and other syntax, type "help" for more details)',
@@ -69,33 +73,13 @@ async def welcome(ctx):
 async def goodbye(ctx):
     user = ctx.author.mention
     message = ctx.options.message
-    server = ctx.get_guild().id
     channel = ctx.options.channel
-    file = {
-        "goodbye_channel_id":channel.id,
-        "goodbye_txt":message,
-        }
-    newpath = r'/home/mint/Desktop/GithubRepos/ToastBot-Hikari/server_save/{server}'.format(server=server) 
     
-    if message.lower() == 'help':
-        return await ctx.respond('Here is the syntax for the goodbye command;\n{user} - mentions the user')
-    
-    if message.lower() == 'reset':
-        try:
-            os.remove(f"server_save/{server}/goodbye.json")
-        except FileNotFoundError:
-            pass
-        return await ctx.respond("'goodbye' settings have been reset")
-    
-    await ctx.respond(f'A goodbye channel has been set to {channel.mention}\nwith message:\n{message.format(user=user)}')
+    await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")
+    await json_write(ctx,"goodbye_channel",channel,'goodbye')
+    await json_write(ctx,"goodbye_txt",message,'goodbye') 
+    await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel}\n- {message.format(user=user)}")
 
-    if not os.path.exists(newpath):
-        os.makedirs(newpath)
-    
-    file_location = open(f'server_save/{server}/goodbye.json', 'w', encoding='utf-8')
-    with file_location as json_file:
-        json.dump(file,json_file, indent=2)
-        
 
 def load(bot):
     bot.add_plugin(plugin)
