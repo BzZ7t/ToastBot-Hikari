@@ -18,25 +18,30 @@ async def json_write(ctx,dic):
             json_file = json_file | dic       
             fs =  open(file_location,'w', encoding="utf-8")
             json.dump(json_file,fs,indent=2)
-    except FileNotFoundError:
+    except FileNotFoundError or json.decoder.JSONDecodeError:
             with open(file_location,'x', encoding="utf-8") as fs:
                 print('fuck yes')
                 json_file = dic
                 json.dump(json_file,fs,indent=2)
     
     
-async def json_erase(ctx, key, key_value):
+async def json_erase(ctx, key_list):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
-    file_location = open(file_location,"w", encoding="utf-8")
     
-    if isinstance(key_value, str) and key_value.lower() == 'reset':
-            try:
-                json_open = json.load(file_location)
-                json_open.pop(key)
-            except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
-                pass
-            return await ctx.respond(f"'{type}' settings have been reset")  
+    try:
+        with open(file_location,'r+', encoding="utf-8") as fs:
+            json_file = json.load(fs)
+            for x in key_list:  # This is fucking jank, TODO: Make this not jank
+                try:
+                    del json_file[x]
+                except KeyError:
+                    return
+            fs = open(file_location,'w', encoding="utf-8")
+            json.dump(json_file,fs,indent=2)
+    except FileNotFoundError or json.decoder.JSONDecodeError or KeyError:
+        pass
+    
 
 #TODO: Simplify how you simplified /interact
 @plugin.command
@@ -55,18 +60,18 @@ async def welcome(ctx):
     user = ctx.author.mention
     message = ctx.options.message
     channel = ctx.options.channel
-    dict = {
-        "welcome_channel":channel.id,
-        "welcome_txt":message
-    }
+    dict = {"welcome_channel":channel.id,
+            "welcome_txt":message}
     
+    if message.lower() == 'reset':
+        erase_list = ['welcome_channel','welcome_txt']
+        await json_erase(ctx, erase_list)
+        return await ctx.respond('welcome messsage has been reset')
     if message.lower() == 'help':
-        return await ctx.respond()
+        return await ctx.respond("`halp`")
 
     await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
     await json_write(ctx,dict)
-    #await json_write(ctx,"welcome_channel",channel.id,'welcome')
-    #await json_write(ctx,"welcome_txt",message,'welcome')
     await ctx.edit_last_response(f"welcome channel has successfully been set to {channel}\n- {message.format(user=user)}")
 
 @plugin.command
@@ -90,6 +95,10 @@ async def goodbye(ctx):
         "goodbye_txt":message
     }
     
+    if message.lower() == 'reset':
+        erase_list = ['goodbye_channel','goodbye_txt']
+        await json_erase(ctx, erase_list)
+        return await ctx.respond('goodbye messsage has been reset')
     if message.lower() == 'help':
         return await ctx.respond()
     
