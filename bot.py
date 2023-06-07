@@ -18,13 +18,12 @@ load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 bot = lightbulb.BotApp(token=TOKEN,
                        intents=hikari.Intents.ALL,
-                       help_slash_command=True,
                        ignore_bots=True)
 miru.install(bot)
 
 #/#/#/#/#/#/#/# ---> Varibles
 global dev_mode
-dev_mode = True
+dev_mode = False
 toastbot_log = 1114676105312489554
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
 async def get_json(server,key):

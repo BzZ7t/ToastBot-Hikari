@@ -6,28 +6,30 @@ import lightbulb
 
 #from bot import get_json
 
-plugin = lightbulb.Plugin('setup', default_enabled_guilds=1011278408770146374)
+plugin = lightbulb.Plugin('setup')
 
 async def json_write(ctx, key, key_value, type):
     server = ctx.get_guild().id
-    json_file = open(f'server_save/{server}.json', 'a+', encoding='utf-8')
+    file_location = r"server_save/{server}.json".format(server=server)
+    file_location = open(file_location,"w+", encoding="utf-8")
+    json_file = open(file_location, 'w+', encoding='utf-8')
     
+    with json_file:
+        if isinstance(key_value, str) and key_value.lower() == 'reset':
+            try:
+                json_open = json.load(json_file)
+                json_open.pop(key)
+            except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
+                pass
+            return await ctx.respond(f"'{type}' settings have been reset")
 
-    if isinstance(key_value, str) and key_value.lower() == 'reset':
         try:
-            jsn.pop(key)
-        except FileNotFoundError or KeyError or json.decoder.JSONDecodeError:
-            pass
-        return await ctx.respond(f"'{type}' settings have been reset")
-
-    with json_file as jsn:
-        try:
-            fille = json.load(jsn)
+            json_file = json.load(json_file)
             dicc = {key:key_value}
-            fille.update(dicc)
+            json_file.update(dicc)
         except json.decoder.JSONDecodeError:
-            fille = {key:key_value}
-        json.dump(fille,jsn, indent=2)
+            json_file = {key:key_value}
+        json.dump(json_file,file_location, indent=2)
 
             
     
