@@ -74,7 +74,7 @@ async def welcome(ctx):
         "welcome_txt":message
     }
     
-    await json_write(ctx,welocme_dict,"welcome")
+    await json_write(ctx,welcome_dict,"welcome")
 
     await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
     #await json_write(ctx,"welcome_channel",channel.id,'welcome')
