@@ -1,5 +1,4 @@
 import json
-import os
 
 import hikari
 import lightbulb
@@ -72,7 +71,8 @@ async def welcome(ctx):
 
     await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
     await json_write(ctx,dict)
-    await ctx.edit_last_response(f"welcome channel has successfully been set to {channel}\n- {message.format(user=user)}")
+    await ctx.edit_last_response(f"welcome channel has successfully been set to {channel.mention}\n- {message.format(user=user)}", 
+                                 user_mentions=False)
 
 @plugin.command
 @lightbulb.option('message',
@@ -104,7 +104,8 @@ async def goodbye(ctx):
     
     await ctx.respond(f"goodbye channel will be set to {channel}\n- {message}")    
     await json_write(ctx,dict)
-    await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel}\n- {message.format(user=user)}")
+    await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel.mention}\n- {message.format(user=user)}",
+                                 user_mentions = False)
 
 
 def load(bot):
