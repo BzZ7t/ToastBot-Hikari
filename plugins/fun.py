@@ -1,7 +1,6 @@
 #-------------> Imports
 import asyncio
 import random
-import time
 
 import hikari
 import lightbulb
@@ -87,7 +86,20 @@ async def coinflip(ctx):
         else:
             await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed incorrectly (**{guess}**)')
 
-
+@fun.child
+@lightbulb.option('text',
+                  'enter somthing that the 8-ball will respond to',
+                  required=True)
+@lightbulb.command('8ball',
+                   'Shake an unique 8-ball')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def eightball(ctx):
+    user = ctx.author.mention
+    message = ctx.options.text
+    ball = open("./plugins/assets/fun/8ball.txt", "r",encoding='utf-8').read().split("\n")
+    
+    await ctx.respond(f"{user}: {message},\n{ball[random.randint(0,len(ball))]}")
+    
 
 def load(bot):
     bot.add_plugin(plugin)
