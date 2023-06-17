@@ -15,7 +15,10 @@ from PIL import Image
 
 #/#/#/#/#/#/#/#/#/#/#/#/# ---> Loading the bot
 if os.name != 'nt':
+    import uvloop
+    uvloop.install()
     os.system('clear')
+    
 else:
     os.system('cls')
 
@@ -150,7 +153,7 @@ async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
 @lightbulb.command('ping',
                    'Says "pong!" followed by bot latency')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def ping(ctx):
+async def ping(ctx: lightbulb.Context):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
 @bot.command
