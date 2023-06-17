@@ -11,18 +11,30 @@ plugin = lightbulb.Plugin('setup')
 async def json_write(ctx,dic):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
+    for key in dic.keys():
+        try:
+            if '+' in dic[key]:
+                dic[key] = dic[key].split('+')
+        
+        except TypeError:    
+            pass
+            
     try:
+        open(file_location,'r+', encoding="utf-8")
+    
+    except FileNotFoundError or json.decoder.JSONDecodeError:
+            with open(file_location,'x', encoding="utf-8") as fs:
+                #dic['server_name'] = hikari.Guild.name #TODO: what the fuck? json doesn't end with } with this
+                print(dic)
+                json_file = dic
+                json.dump(json_file,fs,indent=2)
+                
+    else:
         with open(file_location,'r+', encoding="utf-8") as fs:
             json_file = json.load(fs)
             json_file = json_file | dic       
             fs =  open(file_location,'w', encoding="utf-8")
             json.dump(json_file,fs,indent=2)
-    except FileNotFoundError or json.decoder.JSONDecodeError:
-            with open(file_location,'x', encoding="utf-8") as fs:
-                print('fuck yes')
-                json_file = dic
-                json.dump(json_file,fs,indent=2)
-    
     
 async def json_erase(ctx, key_list):
     server = ctx.get_guild().id
@@ -31,13 +43,17 @@ async def json_erase(ctx, key_list):
     try:
         with open(file_location,'r+', encoding="utf-8") as fs:
             json_file = json.load(fs)
+            
             for x in key_list:  # This is fucking jank, TODO: Make this not jank
                 try:
                     del json_file[x]
+                
                 except KeyError:
                     return
+                
             fs = open(file_location,'w', encoding="utf-8")
             json.dump(json_file,fs,indent=2)
+    
     except FileNotFoundError or json.decoder.JSONDecodeError or KeyError:
         pass
     

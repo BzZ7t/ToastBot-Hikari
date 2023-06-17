@@ -2,8 +2,9 @@
 import asyncio
 import json
 import os
-import time
+import random
 from io import BytesIO
+from time import time
 
 import hikari
 import lightbulb
@@ -13,6 +14,11 @@ from dotenv import load_dotenv
 from PIL import Image
 
 #/#/#/#/#/#/#/#/#/#/#/#/# ---> Loading the bot
+if os.name != 'nt':
+    os.system('clear')
+else:
+    os.system('cls')
+
 print("Fix your code")
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
@@ -25,6 +31,7 @@ miru.install(bot)
 global dev_mode
 dev_mode = False
 toastbot_log = 1114676105312489554
+
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
 async def get_json(server, key):
     with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
@@ -53,10 +60,11 @@ async def startup(event):
 @bot.listen(hikari.StoppingEvent)
 async def poweringdown(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is starting to powerdown...")
-
-@bot.listen(hikari.StoppingEvent)
-async def powereddown(event):
     await bot.rest.create_message(toastbot_log, "Powered down..\nGoodnight<3")
+
+@bot.listen(hikari.StoppedEvent)
+async def powereddown(event):
+    pass
 
 #TODO: I hate this, oh god how I hate this. YANDEV GET OUT MY HEEEAAAAADDDDD  
 @bot.listen(lightbulb.CommandErrorEvent)
@@ -102,25 +110,41 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
     user = event.member.mention
     try:
+        await get_json(event.guild_id,'welcome_channel')
+    
+    except FileNotFoundError or KeyError:
+        pass
+    
+    else:
         channel = await get_json(event.guild_id,'welcome_channel')
         txt = await get_json(event.guild_id,'welcome_txt')
+        
+        if isinstance(txt, list):
+            txt = txt(random.randint(0,len(txt)-1))
+            
         await bot.rest.create_message(channel, txt.format(user=user),
                                       user_mentions=True)
         
-    except FileNotFoundError:
-        pass
-    
 @bot.listen(hikari.MemberDeleteEvent)
 async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
     user = event.user.mention
     try:
+       await get_json(event.guild_id,'goodbye_channel')
+        
+    except FileNotFoundError or KeyError:
+        pass
+    
+    else:
         channel = await get_json(event.guild_id,'goodbye_channel')
         txt = await get_json(event.guild_id,'goodbye_txt')
+        
+        if isinstance(txt, list):
+            txt = txt(random.randint(0,len(txt)-1))
+        
         await bot.rest.create_message(channel, txt.format(user=user),
                                       user_mentions=True)
+            
         
-    except FileNotFoundError:
-        pass
 
 @bot.command#\--------> /ping
 @lightbulb.command('ping',
@@ -184,7 +208,7 @@ async def cat(ctx):
         fmat_type = "gif"
     cat_url = f"https://cataas.com/cat{gif}{text}{cat_filter}"
         
-    await ctx.respond('Getting catto...', flags=hikari.MessageFlag.EPHEMERAL)
+    await ctx.respond('Getting catto...')
     
     try:
         
@@ -194,7 +218,8 @@ async def cat(ctx):
             im.thumbnail((1024, 1024))
             im.save("temp_cat." + fmat_type, save_all=True)
 
-        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+        await ctx.edit_last_response(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+        await ctx.edit_last_response(' ')
         
         if dev_mode != True:
             os.remove(f"temp_cat.{fmat_type}")
@@ -207,7 +232,9 @@ async def cat(ctx):
             im.thumbnail((1024, 1024))
             im.save("temp_cat." + fmat_type, save_all=True)
 
-        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+        await ctx.edit_last_response(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+        await ctx.edit_last_response(' ')
+
         await ctx.respond("You can't use this filter with a gif!\nI've given a still image instead",
                           flags=hikari.MessageFlag.EPHEMERAL)
         
