@@ -29,7 +29,7 @@ plugin = lightbulb.Plugin("interact")
 @lightbulb.command("interact",
                    "interact with other users!")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def interact(ctx):
+async def interact(ctx: lightbulb.Context):
     user_ran = ctx.author.mention
     user_interact = ctx.options.user
     interaction = ctx.options.interaction

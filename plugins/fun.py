@@ -21,7 +21,7 @@ async def fun(ctx):
 @lightbulb.command('toast-insults',
                    'Make ToastBot reply with a toast-related insult')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def toastinsult(ctx):
+async def toastinsult(ctx: lightbulb.Context):
     insult = open("./plugins/assets/fun/toast-insults.txt", "r",encoding='utf-8').read().split("\n")
     await ctx.respond(insult[random.randint(0,len(insult))])
     
@@ -31,7 +31,7 @@ async def toastinsult(ctx):
 @lightbulb.command('diceroll',
                    'Roll a dice (default is 6)')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def roll(ctx):
+async def roll(ctx: lightbulb.Context):
     high_no = ctx.options.number
     
     try:
@@ -63,7 +63,7 @@ async def roll(ctx):
 @lightbulb.command('coinflip',
                    'flip a 50/50 coin!')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def coinflip(ctx):
+async def coinflip(ctx: lightbulb.Context):
     coin_result = 'Tails'
     guess = ctx.options.guess
     
@@ -93,7 +93,7 @@ async def coinflip(ctx):
 @lightbulb.command('8ball',
                    'Shake an unique 8-ball')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def eightball(ctx):
+async def eightball(ctx: lightbulb.Context):
     user = ctx.author.mention
     message = ctx.options.text
     ball = open("./plugins/assets/fun/8ball.txt", "r",encoding='utf-8').read().split("\n")

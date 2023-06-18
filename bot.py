@@ -157,10 +157,10 @@ async def ping(ctx: lightbulb.Context):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
 @bot.command
-@lightbulb.command('help-test',
+@lightbulb.command('help',
                    'Get a list of all commands')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def help(ctx):
+async def help(ctx: lightbulb.Context):
     help_file = open('README.md', 'r', encoding='utf-8').read()
     await ctx.respond(help_file, flags=hikari.MessageFlag.SUPPRESS_EMBEDS)
 
@@ -168,14 +168,14 @@ async def help(ctx):
 @lightbulb.command("donate",
                    "Get my creator's Ko-Fi page!")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def donate(ctx):
+async def donate(ctx: lightbulb.Context):
     await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t\n\nthe /cat command uses Cat As A Service (https://cataas.com/#/) please check them out as well,\nhttps://www.buymeacoffee.com/kevinbalicot")
 
 @bot.command
 @lightbulb.command("toaster",
                    "Toast bread (not Toast) into Toast")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def toaster(ctx):
+async def toaster(ctx: lightbulb.Context):
     pass #TODO: What can I do here that would actually be interesting?
 
 #---> /cat,
@@ -200,7 +200,7 @@ async def toaster(ctx):
 @lightbulb.command("cat",
                    "get a random cat image from https://cataas.com/#/")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def cat(ctx):
+async def cat(ctx: lightbulb.Context):
     cat_filter = f'?filter={ctx.options.filter}'
     text = f"/says/{ctx.options.text}"
     gif = f"{ctx.options.gif}"
@@ -254,7 +254,7 @@ async def cat(ctx):
 @lightbulb.command('suggest',
                    'give some feedback and/or suggestions to my creator!')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def suggest(ctx):
+async def suggest(ctx: lightbulb.Context):
     user = ctx.author.id
     username = ctx.author
     sugg = ctx.options.text

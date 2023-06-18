@@ -37,7 +37,7 @@ async def mod():
 @lightbulb.command('ban',
                    'ban a member from the server')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def ban(ctx):
+async def ban(ctx: lightbulb.Context):
     server = ctx.get_guild() 
     reason = ctx.options.reason
     user_interact = ctx.options.user
@@ -61,7 +61,7 @@ async def ban(ctx):
 @lightbulb.command('kick',
                    'kick a member from the server')
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def kick(ctx):
+async def kick(ctx: lightbulb.Context):
     server = ctx.get_guild()
     reason = f"{ctx.options.reason}"
     user_interact = ctx.options.user
