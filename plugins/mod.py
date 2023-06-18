@@ -1,4 +1,4 @@
-#-------------> Imports
+# Imports
 import asyncio
 import random
 import time
@@ -15,7 +15,7 @@ def get_user_id(user):
         user = str.replace(user,x, "")
     return user
 
-#----> '/fun' setup, note that the decription is not being used here, despite being added
+# '/mod' setup, note that the decription is not being used here, despite being added
 @plugin.command
 @lightbulb.command("mod",
                   "Moderation tools for the Mod Team")
@@ -23,6 +23,8 @@ def get_user_id(user):
 async def mod():
     pass
 
+# /mod ban <user> <reason>
+# ban a member from the server
 @mod.child
 @lightbulb.add_cooldown(3.0, 1, lightbulb.GuildBucket)
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.BAN_MEMBERS),
@@ -46,7 +48,8 @@ async def ban(ctx: lightbulb.Context):
     await server.ban(user_interact_id, reason=reason)
     await ctx.respond(f"{user_interact} was succesfully banned with reason:\n`{reason}`", flags=hikari.MessageFlag.EPHEMERAL)
     
-
+# /mod kick <user> <reason>
+# kick a member from the server
 @mod.child
 @lightbulb.add_cooldown(3.0, 1, lightbulb.GuildBucket)
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.KICK_MEMBERS),
@@ -74,6 +77,6 @@ async def kick(ctx: lightbulb.Context):
     
     
 
-
+# Loading the bot
 def load(bot):
     bot.add_plugin(plugin)

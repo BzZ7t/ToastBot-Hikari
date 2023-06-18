@@ -7,7 +7,7 @@ import lightbulb
 
 plugin = lightbulb.Plugin("fun")
 
-#----> '/fun' setup, note that the decription is not being used here, despite being added
+# '/fun' setup, note that the decription is not being used here, despite being added
 @plugin.command
 @lightbulb.command("fun",
                    "Do all the **fun** stuff :D")
@@ -15,8 +15,8 @@ plugin = lightbulb.Plugin("fun")
 async def fun(ctx):
     pass
     
-#----------------------------> /fun toast-insults
-#----> responds with a random index from the list ""
+# /fun toast-insults
+# Make ToastBot reply with a toast-related insult
 @fun.child
 @lightbulb.command('toast-insults',
                    'Make ToastBot reply with a toast-related insult')
@@ -24,7 +24,9 @@ async def fun(ctx):
 async def toastinsult(ctx: lightbulb.Context):
     insult = open("./plugins/assets/fun/toast-insults.txt", "r",encoding='utf-8').read().split("\n")
     await ctx.respond(insult[random.randint(0,len(insult))])
-    
+
+# /fun diceroll <number>
+# Roll a dice (default is 6)
 @fun.child 
 @lightbulb.option('number',
                   'whats the highest number the dice could roll?', required=False, default=6)
@@ -55,7 +57,9 @@ async def roll(ctx: lightbulb.Context):
         await ctx.edit_last_response("That is not a number, please try again...")
         await asyncio.sleep(1)
         await ctx.delete_last_response()
-        
+
+# /fun coinflip <guess[Heads,Tails]>
+# flip a 50/50 coin!
 @fun.child
 @lightbulb.option('guess',
                   'Guess if its heads or tails!', required=False, default='None',
@@ -86,12 +90,14 @@ async def coinflip(ctx: lightbulb.Context):
         else:
             await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed incorrectly (**{guess}**)')
 
+# /fun 8ball <text>
+# Shake a unique 8-ball
 @fun.child
 @lightbulb.option('text',
                   'enter somthing that the 8-ball will respond to',
                   required=True)
 @lightbulb.command('8ball',
-                   'Shake an unique 8-ball')
+                   'Shake a unique 8-ball')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def eightball(ctx: lightbulb.Context):
     user = ctx.author.mention
@@ -100,6 +106,6 @@ async def eightball(ctx: lightbulb.Context):
     
     await ctx.respond(f"{user}: {message},\n{ball[random.randint(0,len(ball))]}")
     
-
+# Loads the plugin
 def load(bot):
     bot.add_plugin(plugin)

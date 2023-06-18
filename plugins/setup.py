@@ -1,13 +1,15 @@
+# imports
 import json
 
 import hikari
 import lightbulb
 
-#from bot import get_json
 
 plugin = lightbulb.Plugin('setup')
 
+# Common functions
 
+# Writes a dictionary to an existing/new json file
 async def json_write(ctx: lightbulb.Context,dic):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
@@ -34,7 +36,8 @@ async def json_write(ctx: lightbulb.Context,dic):
             json_file = json_file | dic       
             fs =  open(file_location,'w', encoding="utf-8")
             json.dump(json_file,fs,indent=2)
-    
+
+# Deletes a Json's keys from key_list   
 async def json_erase(ctx, key_list):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
@@ -58,6 +61,8 @@ async def json_erase(ctx, key_list):
     
 
 #TODO: Simplify how you simplified /interact
+# /welcome <channel> <message>
+# set up a welcome channel
 @plugin.command
 @lightbulb.option('message',
                   'set a message (type "reset" to reset, for mentions and other syntax, type "help" for more details)',
@@ -92,6 +97,8 @@ async def welcome(ctx: lightbulb.Context):
     await ctx.edit_last_response(f"welcome channel has successfully been set to {channel.mention}\n- {message.format(user=user,server=ctx.get_guild().name)}", 
                                  user_mentions=False)
 
+# /goodbye <channel> <message>
+# set up a goodbye channel
 @plugin.command
 @lightbulb.option('message',
                   'set a message (type "reset" to reset, for mentions and other syntax, type "help" for more details)',
@@ -128,7 +135,7 @@ async def goodbye(ctx: lightbulb.Context):
     await ctx.edit_last_response(f"goodbye channel has successfully been set to {channel.mention}\n- {message.format(user=user,server=ctx.get_guild().name)}",
                                  user_mentions = False)
 
-
+# Loads the plugin
 def load(bot):
     bot.add_plugin(plugin)
     

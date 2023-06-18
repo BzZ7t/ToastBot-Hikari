@@ -41,12 +41,15 @@ async def get_json(server, key):
         jsn = json.load(json_file)
     return jsn[key]
 
+#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/# ---> Listeners
 
+# When bot is starting
 @bot.listen(hikari.StartingEvent)
 async def startingup(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is starting up....")
 
-@bot.listen(hikari.StartedEvent)#--------> When bot has started
+# When bot has started
+@bot.listen(hikari.StartedEvent)
 async def startup(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is online!\nGood morning!")
     print('''                                   
@@ -60,15 +63,18 @@ async def startup(event):
                                                                                         
 ''')
   
+# When bot is powering down
 @bot.listen(hikari.StoppingEvent)
 async def poweringdown(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is starting to powerdown...")
     await bot.rest.create_message(toastbot_log, "Powered down..\nGoodnight<3")
 
+# When bot has powered down
 @bot.listen(hikari.StoppedEvent)
 async def powereddown(event):
     pass
 
+# When an a command error has occured 
 #TODO: I hate this, oh god how I hate this. YANDEV GET OUT MY HEEEAAAAADDDDD  
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
@@ -109,6 +115,7 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
                                         flags=hikari.MessageFlag.EPHEMERAL)
         raise event.exception
 
+# When a member has joined a guild
 @bot.listen(hikari.MemberCreateEvent)
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
     user = event.member.mention
@@ -127,7 +134,8 @@ async def welcome_join(event: hikari.MemberCreateEvent) -> None:
             
         await bot.rest.create_message(channel, txt.format(user=user),
                                       user_mentions=True)
-        
+
+# When a member has left the guild       
 @bot.listen(hikari.MemberDeleteEvent)
 async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
     user = event.user.mention
@@ -148,22 +156,27 @@ async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
                                       user_mentions=True)
             
         
-
-@bot.command#\--------> /ping
+# /ping
+# Says "pong!" followed by bot latency
+@bot.command
 @lightbulb.command('ping',
                    'Says "pong!" followed by bot latency')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def ping(ctx: lightbulb.Context):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
+# /about
+# Get info about ToastBot
 @bot.command
-@lightbulb.command('help',
-                   'Get a list of all commands')
+@lightbulb.command('about',
+                   'Get info about ToastBot')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx: lightbulb.Context):
     help_file = open('README.md', 'r', encoding='utf-8').read()
     await ctx.respond(help_file, flags=hikari.MessageFlag.SUPPRESS_EMBEDS)
 
+# /donate
+# Get my creator's Ko-Fi page!
 @bot.command
 @lightbulb.command("donate",
                    "Get my creator's Ko-Fi page!")
@@ -171,6 +184,8 @@ async def help(ctx: lightbulb.Context):
 async def donate(ctx: lightbulb.Context):
     await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t\n\nthe /cat command uses Cat As A Service (https://cataas.com/#/) please check them out as well,\nhttps://www.buymeacoffee.com/kevinbalicot")
 
+# /toaster
+# Toast bread (not Toast) into Toast
 @bot.command
 @lightbulb.command("toaster",
                    "Toast bread (not Toast) into Toast")
@@ -178,8 +193,8 @@ async def donate(ctx: lightbulb.Context):
 async def toaster(ctx: lightbulb.Context):
     pass #TODO: What can I do here that would actually be interesting?
 
-#---> /cat,
-#-> Uses CAAS API to get a random image of a cat
+# /cat <gif[Yes,No]> <text> <filter[blur,mono,sepia,negative,paint,pixel]>
+# get a random cat image from https://cataas.com/#/
 @bot.command
 @lightbulb.option('filter',
                   "add a filter (Keep in mind, some don't work with gifs)",
@@ -246,7 +261,8 @@ async def cat(ctx: lightbulb.Context):
     
         
 
-
+# /suggest <text>
+# give some feedback and/or suggestions to my creator!
 @bot.command
 @lightbulb.option('text',
                   'type the feedback/suggestion',
