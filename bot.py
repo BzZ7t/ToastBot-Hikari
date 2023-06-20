@@ -27,12 +27,11 @@ load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 bot = lightbulb.BotApp(token=TOKEN,
                        intents=hikari.Intents.ALL,
-                       ignore_bots=True)
+                       ignore_bots=True,)
 miru.install(bot)
 
 #/#/#/#/#/#/#/# ---> Varibles
 global dev_mode
-dev_mode = False
 toastbot_log = 1114676105312489554
 
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
@@ -54,12 +53,12 @@ async def startup(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is online!\nGood morning!")
     print('''                                   
 
-            🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
-            🍞🍞╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝🍞🍞
-            🍞🍞░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░🍞🍞
-            🍞🍞░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░🍞🍞
-            🍞🍞░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░🍞🍞
-            🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
+🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
+🍞🍞╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝🍞🍞
+🍞🍞░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░🍞🍞
+🍞🍞░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░🍞🍞
+🍞🍞░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░🍞🍞
+🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
                                                                                         
 ''')
   
@@ -120,14 +119,21 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
     user = event.member.mention
     try:
-        await get_json(event.guild_id,'welcome_channel')
-    
+        channel = await get_json(event.guild_id,'welcome_channel')
+        txt = await get_json(event.guild_id,'welcome_txt')
+
     except FileNotFoundError or KeyError:
         pass
     
     else:
-        channel = await get_json(event.guild_id,'welcome_channel')
-        txt = await get_json(event.guild_id,'welcome_txt')
+        try:
+            role = await get_json(event.guild_id, 'welcome_role')
+            
+        except KeyError:
+            pass
+        
+        else:
+            bot.rest.add_role_to_member(event.guild_id,user,role)
         
         if isinstance(txt, list):
             txt = txt(random.randint(0,len(txt)-1))
@@ -213,7 +219,7 @@ async def toaster(ctx: lightbulb.Context):
                   choices=[hikari.CommandChoice(name="Yes", value="/gif"),
                            hikari.CommandChoice(name="No", value="")])
 @lightbulb.command("cat",
-                   "get a random cat image from https://cataas.com/#/")
+                   "get a random cat image from https://cataas.com/#/", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def cat(ctx: lightbulb.Context):
     cat_filter = f'?filter={ctx.options.filter}'
@@ -226,7 +232,8 @@ async def cat(ctx: lightbulb.Context):
         fmat_type = "gif"
     cat_url = f"https://cataas.com/cat{gif}{text}{cat_filter}"
         
-    await ctx.respond('Getting catto...')
+    
+    #await ctx.respond('Getting catto...',flags=hikari.MessageFlag.LOADING)
     
     try:
         
@@ -236,11 +243,9 @@ async def cat(ctx: lightbulb.Context):
             im.thumbnail((1024, 1024))
             im.save("temp_cat." + fmat_type, save_all=True)
 
-        await ctx.edit_last_response(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
-        await ctx.edit_last_response(' ')
-        
-        if dev_mode != True:
-            os.remove(f"temp_cat.{fmat_type}")
+        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+    
+        os.remove(f"temp_cat.{fmat_type}")
         
     except requests.exceptions.HTTPError:
         cat_url = f"https://cataas.com/cat{text}{cat_filter}"
@@ -250,40 +255,16 @@ async def cat(ctx: lightbulb.Context):
             im.thumbnail((1024, 1024))
             im.save("temp_cat." + fmat_type, save_all=True)
 
-        await ctx.edit_last_response(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
-        await ctx.edit_last_response(' ')
+        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
 
         await ctx.respond("You can't use this filter with a gif!\nI've given a still image instead",
                           flags=hikari.MessageFlag.EPHEMERAL)
         
+        os.remove(f"temp_cat.{fmat_type}")
+        
     except requests.exceptions.ConnectionError:
         await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot')
     
-        
-
-# /suggest <text>
-# give some feedback and/or suggestions to my creator!
-@bot.command
-@lightbulb.option('text',
-                  'type the feedback/suggestion',
-                  required=True)
-@lightbulb.command('suggest',
-                   'give some feedback and/or suggestions to my creator!')
-@lightbulb.implements(lightbulb.SlashCommand)
-async def suggest(ctx: lightbulb.Context):
-    user = ctx.author.id
-    username = ctx.author
-    sugg = ctx.options.text
-    try:
-        file = open(f'feedbacksuggestions/{user}_feedback.txt', 'r', encoding='utf-8')
-        await ctx.respond('You have already made a suggestion,\nplease let Zed know if you made a mistake with your suggestion', flags=hikari.MessageFlag.EPHEMERAL)
-        print(f'Possible suggest error by {username}')
-        
-    except FileNotFoundError:
-        file = open(f'feedbacksuggestions/{user}_feedback.txt', 'w', encoding='utf-8')
-        file.write(f'{sugg}\nby {username}')
-        await ctx.respond(f"Thank you for your suggestion {username.mention}!\nIt's greatly appriciated :>\n```{sugg}```")
-        
 
 # Any plugin with the extention .py.off will not be implemented
 # the .off has no particular funtion, lightbulb just doesn't recognise it haha

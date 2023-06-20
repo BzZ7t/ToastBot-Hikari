@@ -4,11 +4,16 @@ import json
 import hikari
 import lightbulb
 
-
+# Common variables
 plugin = lightbulb.Plugin('setup')
+help_user_join_leave = '''
+`{member}` - mention a member
+`{server}` - current name of the server
+
+You can also use `,` to make a list of messages that the bot will randomly choose from
+An example of that would be `message1+message2`'''
 
 # Common functions
-
 # Writes a dictionary to an existing/new json file
 async def json_write(ctx: lightbulb.Context,dic):
     server = ctx.get_guild().id
@@ -38,7 +43,7 @@ async def json_write(ctx: lightbulb.Context,dic):
             json.dump(json_file,fs,indent=2)
 
 # Deletes a Json's keys from key_list   
-async def json_erase(ctx, key_list):
+async def json_erase(ctx: lightbulb.Context, key_list):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
     
@@ -59,17 +64,56 @@ async def json_erase(ctx, key_list):
     except FileNotFoundError or json.decoder.JSONDecodeError or KeyError:
         pass
     
+async def get_json(server, key):
+    with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
+        jsn = json.load(json_file)
+    return jsn[key]
+
+
+# Listeners 
+# Listens to a server name change TODO: unsure of this, please check that it does this
+@plugin.listener(hikari.GuildUpdateEvent)
+async def guild_name_update(event: hikari.GuildUpdateEvent):
+    guild_name = event.get_guild().name
+    await json_write(event,{"server_name": guild_name})
+
+# Commands
+# /reset <setting[welcome,goodbye,]
+# reset a selected server setting TODO: Maybe add an 'all' selection?
+@plugin.command
+@lightbulb.option('setting',
+                  'choose a setting to reset',
+                  required=True,
+                  choices=['welcome',
+                           'goodbye'])
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command('reset',
+                   'reset server settings')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def reset(ctx: lightbulb.Context):
+    setting = ctx.options.setting
+    erase_list = [f'{setting}_channel',
+                  f'{setting}_txt',
+                  f'{setting}_role']
+    await json_erase(ctx, erase_list)
+    await ctx.respond(f'{setting} setting has been reset')
+    
 
 #TODO: Simplify how you simplified /interact
 # /welcome <channel> <message>
 # set up a welcome channel
 @plugin.command
+@lightbulb.option('role',
+                  'add a role when user joins?',
+                  hikari.Role,
+                  required=False,
+                  default=None)
 @lightbulb.option('message',
                   'set a message (type "reset" to reset, for mentions and other syntax, type "help" for more details)',
                   required=True)
 @lightbulb.option('channel',
                   'set the welcome channel',
-                  hikari.GuildTextChannel,
+                  hikari.TextableGuildChannel,
                   required=True)
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command('welcome',
@@ -85,12 +129,18 @@ async def welcome(ctx: lightbulb.Context):
         return await ctx.respond('welcome messsage has been reset')
     
     if message.lower() == 'help':
-        return await ctx.respond("`halp`")
+        return await ctx.respond("Here's the syntax for /welcome,"+help_user_join_leave)
 
     user = ctx.author.mention
     channel = ctx.options.channel
     dict = {"welcome_channel":channel.id,
             "welcome_txt":message}
+    role = ctx.options.role
+    
+    if role != None:
+        dict = {"welcome_channel":channel.id,
+            "welcome_txt":message,
+            "welcome_role": role.id}
     
     await ctx.respond(f"welcome channel will be set to {channel}\n- {message}")
     await json_write(ctx,dict)
@@ -105,7 +155,7 @@ async def welcome(ctx: lightbulb.Context):
                   required=True)
 @lightbulb.option('channel',
                   'set the goodbye channel',
-                  hikari.GuildTextChannel,
+                  hikari.TextableGuildChannel,
                   required=True)
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command('goodbye',
