@@ -5,5 +5,5 @@ feel free to add the bot [here](https://discord.com/api/oauth2/authorize?client_
 
 ## Keep me free without any freemium subcription by supporting my creator on Ko-Fi
 
-<https://ko-fi.com/bzz7t>  
+(link soon)
 Thank you!

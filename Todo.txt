@@ -12,6 +12,8 @@ This is a simple Todo list of all the fearures I wanna work on
 
 • implement gifs into /interact for gifs,
     This would be done using an API 
+    
+• ticket system
 
 
 Don't forget the individual TODO's in code
