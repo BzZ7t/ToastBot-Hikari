@@ -1,3 +1,4 @@
+# Imports
 import asyncio
 import random
 import time
@@ -8,11 +9,11 @@ import miru
 
 plugin = lightbulb.Plugin("interact")
 
-#---> Common Varibles 
+# Common Varibles 
 
-#---> Common Functions
+# Common Functions
 
-# ----> '/interact' setup, note that the decription is not being used here, despite being added
+#/interact <user> <interaction[hug,kiss,boop,]> <gif[Yes,No]>
 @plugin.command
 @lightbulb.option('gif',
                   "add a gif to the message?", required=False, default=False,
@@ -29,7 +30,7 @@ plugin = lightbulb.Plugin("interact")
 @lightbulb.command("interact",
                    "interact with other users!")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def interact(ctx):
+async def interact(ctx: lightbulb.Context):
     user_ran = ctx.author.mention
     user_interact = ctx.options.user
     interaction = ctx.options.interaction
@@ -47,8 +48,8 @@ async def interact(ctx):
         await ctx.respond(f"There was an error opening {interaction} interactions...\nThe error has been logged and will be fixed")
         print(f"ERROR!: Where the fuck is the file for {interaction}s?")
 
-#-----------> More complex interactions,
-#---------------------------------> /interact violence user:
+# More complex interactions,
 
+# Loading the plugin
 def load(bot):
     bot.add_plugin(plugin)

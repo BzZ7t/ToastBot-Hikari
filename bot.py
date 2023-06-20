@@ -2,8 +2,9 @@
 import asyncio
 import json
 import os
-import time
+import random
 from io import BytesIO
+from time import time
 
 import hikari
 import lightbulb
@@ -13,51 +14,66 @@ from dotenv import load_dotenv
 from PIL import Image
 
 #/#/#/#/#/#/#/#/#/#/#/#/# ---> Loading the bot
+if os.name != 'nt':
+    import uvloop
+    uvloop.install()
+    os.system('clear')
+    
+else:
+    os.system('cls')
+
 print("Fix your code")
 load_dotenv()
 TOKEN = os.getenv("TOASTBOT")
 bot = lightbulb.BotApp(token=TOKEN,
                        intents=hikari.Intents.ALL,
-                       ignore_bots=True)
+                       ignore_bots=True,)
 miru.install(bot)
 
 #/#/#/#/#/#/#/# ---> Varibles
 global dev_mode
-dev_mode = False
 toastbot_log = 1114676105312489554
+
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
 async def get_json(server, key):
     with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
         jsn = json.load(json_file)
     return jsn[key]
 
+#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/# ---> Listeners
 
+# When bot is starting
 @bot.listen(hikari.StartingEvent)
 async def startingup(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is starting up....")
 
-@bot.listen(hikari.StartedEvent)#--------> When bot has started
+# When bot has started
+@bot.listen(hikari.StartedEvent)
 async def startup(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is online!\nGood morning!")
     print('''                                   
 
-            🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
-            🍞🍞╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝🍞🍞
-            🍞🍞░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░🍞🍞
-            🍞🍞░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░🍞🍞
-            🍞🍞░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░🍞🍞
-            🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
+🍞🍞████████╗░█████╗░░█████╗░░██████╗████████╗██████╗░░█████╗░████████╗🍞🍞
+🍞🍞╚══██╔══╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝🍞🍞
+🍞🍞░░░██║░░░██║░░██║███████║╚█████╗░░░░██║░░░██████╦╝██║░░██║░░░██║░░░🍞🍞
+🍞🍞░░░██║░░░██║░░██║██╔══██║░╚═══██╗░░░██║░░░██╔══██╗██║░░██║░░░██║░░░🍞🍞
+🍞🍞░░░██║░░░╚█████╔╝██║░░██║██████╔╝░░░██║░░░██████╦╝╚█████╔╝░░░██║░░░🍞🍞
+🍞🍞░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═════╝░░╚════╝░░░░╚═╝░░░🍞🍞
                                                                                         
 ''')
   
+# When bot is powering down
 @bot.listen(hikari.StoppingEvent)
 async def poweringdown(event):
     await bot.rest.create_message(toastbot_log, "ToastBot is starting to powerdown...")
-
-@bot.listen(hikari.StoppingEvent)
-async def powereddown(event):
     await bot.rest.create_message(toastbot_log, "Powered down..\nGoodnight<3")
 
+# When bot has powered down
+@bot.listen(hikari.StoppedEvent)
+async def powereddown(event):
+    pass
+
+# When an a command error has occured 
 #TODO: I hate this, oh god how I hate this. YANDEV GET OUT MY HEEEAAAAADDDDD  
 @bot.listen(lightbulb.CommandErrorEvent)
 async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
@@ -98,61 +114,93 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
                                         flags=hikari.MessageFlag.EPHEMERAL)
         raise event.exception
 
+# When a member has joined a guild
 @bot.listen(hikari.MemberCreateEvent)
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
     user = event.member.mention
     try:
         channel = await get_json(event.guild_id,'welcome_channel')
         txt = await get_json(event.guild_id,'welcome_txt')
-        await bot.rest.create_message(channel, txt.format(user=user),
-                                      user_mentions=True)
-        
-    except FileNotFoundError:
+
+    except FileNotFoundError or KeyError:
         pass
     
+    else:
+        try:
+            role = await get_json(event.guild_id, 'welcome_role')
+            
+        except KeyError:
+            pass
+        
+        else:
+            bot.rest.add_role_to_member(event.guild_id,user,role)
+        
+        if isinstance(txt, list):
+            txt = txt(random.randint(0,len(txt)-1))
+            
+        await bot.rest.create_message(channel, txt.format(user=user),
+                                      user_mentions=True)
+
+# When a member has left the guild       
 @bot.listen(hikari.MemberDeleteEvent)
 async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
     user = event.user.mention
     try:
+       await get_json(event.guild_id,'goodbye_channel')
+        
+    except FileNotFoundError or KeyError:
+        pass
+    
+    else:
         channel = await get_json(event.guild_id,'goodbye_channel')
         txt = await get_json(event.guild_id,'goodbye_txt')
+        
+        if isinstance(txt, list):
+            txt = txt(random.randint(0,len(txt)-1))
+        
         await bot.rest.create_message(channel, txt.format(user=user),
                                       user_mentions=True)
+            
         
-    except FileNotFoundError:
-        pass
-
-@bot.command#\--------> /ping
+# /ping
+# Says "pong!" followed by bot latency
+@bot.command
 @lightbulb.command('ping',
                    'Says "pong!" followed by bot latency')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def ping(ctx):
+async def ping(ctx: lightbulb.Context):
     await ctx.respond(f"Pong!\nLatency: {ctx.bot.heartbeat_latency * 1000:,.0f}ms")
 
+# /about
+# Get info about ToastBot
 @bot.command
-@lightbulb.command('help',
-                   'Get a list of all commands')
+@lightbulb.command('about',
+                   'Get info about ToastBot')
 @lightbulb.implements(lightbulb.SlashCommand)
-async def help(ctx):
+async def help(ctx: lightbulb.Context):
     help_file = open('README.md', 'r', encoding='utf-8').read()
     await ctx.respond(help_file, flags=hikari.MessageFlag.SUPPRESS_EMBEDS)
 
+# /donate
+# Get my creator's Ko-Fi page!
 @bot.command
 @lightbulb.command("donate",
                    "Get my creator's Ko-Fi page!")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def donate(ctx):
+async def donate(ctx: lightbulb.Context):
     await ctx.respond("Keep these projects free without a premium subcription by supporting me on Ko-Fi! \nhttps://ko-fi.com/bzz7t\n\nthe /cat command uses Cat As A Service (https://cataas.com/#/) please check them out as well,\nhttps://www.buymeacoffee.com/kevinbalicot")
 
+# /toaster
+# Toast bread (not Toast) into Toast
 @bot.command
 @lightbulb.command("toaster",
                    "Toast bread (not Toast) into Toast")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def toaster(ctx):
+async def toaster(ctx: lightbulb.Context):
     pass #TODO: What can I do here that would actually be interesting?
 
-#---> /cat,
-#-> Uses CAAS API to get a random image of a cat
+# /cat <gif[Yes,No]> <text> <filter[blur,mono,sepia,negative,paint,pixel]>
+# get a random cat image from https://cataas.com/#/
 @bot.command
 @lightbulb.option('filter',
                   "add a filter (Keep in mind, some don't work with gifs)",
@@ -171,9 +219,9 @@ async def toaster(ctx):
                   choices=[hikari.CommandChoice(name="Yes", value="/gif"),
                            hikari.CommandChoice(name="No", value="")])
 @lightbulb.command("cat",
-                   "get a random cat image from https://cataas.com/#/")
+                   "get a random cat image from https://cataas.com/#/", auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
-async def cat(ctx):
+async def cat(ctx: lightbulb.Context):
     cat_filter = f'?filter={ctx.options.filter}'
     text = f"/says/{ctx.options.text}"
     gif = f"{ctx.options.gif}"
@@ -184,7 +232,8 @@ async def cat(ctx):
         fmat_type = "gif"
     cat_url = f"https://cataas.com/cat{gif}{text}{cat_filter}"
         
-    await ctx.respond('Getting catto...', flags=hikari.MessageFlag.EPHEMERAL)
+    
+    #await ctx.respond('Getting catto...',flags=hikari.MessageFlag.LOADING)
     
     try:
         
@@ -195,9 +244,8 @@ async def cat(ctx):
             im.save("temp_cat." + fmat_type, save_all=True)
 
         await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
-        
-        if dev_mode != True:
-            os.remove(f"temp_cat.{fmat_type}")
+    
+        os.remove(f"temp_cat.{fmat_type}")
         
     except requests.exceptions.HTTPError:
         cat_url = f"https://cataas.com/cat{text}{cat_filter}"
@@ -208,36 +256,15 @@ async def cat(ctx):
             im.save("temp_cat." + fmat_type, save_all=True)
 
         await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
+
         await ctx.respond("You can't use this filter with a gif!\nI've given a still image instead",
                           flags=hikari.MessageFlag.EPHEMERAL)
+        
+        os.remove(f"temp_cat.{fmat_type}")
         
     except requests.exceptions.ConnectionError:
         await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot')
     
-        
-
-
-@bot.command
-@lightbulb.option('text',
-                  'type the feedback/suggestion',
-                  required=True)
-@lightbulb.command('suggest',
-                   'give some feedback and/or suggestions to my creator!')
-@lightbulb.implements(lightbulb.SlashCommand)
-async def suggest(ctx):
-    user = ctx.author.id
-    username = ctx.author
-    sugg = ctx.options.text
-    try:
-        file = open(f'feedbacksuggestions/{user}_feedback.txt', 'r', encoding='utf-8')
-        await ctx.respond('You have already made a suggestion,\nplease let Zed know if you made a mistake with your suggestion', flags=hikari.MessageFlag.EPHEMERAL)
-        print(f'Possible suggest error by {username}')
-        
-    except FileNotFoundError:
-        file = open(f'feedbacksuggestions/{user}_feedback.txt', 'w', encoding='utf-8')
-        file.write(f'{sugg}\nby {username}')
-        await ctx.respond(f"Thank you for your suggestion {username.mention}!\nIt's greatly appriciated :>\n```{sugg}```")
-        
 
 # Any plugin with the extention .py.off will not be implemented
 # the .off has no particular funtion, lightbulb just doesn't recognise it haha

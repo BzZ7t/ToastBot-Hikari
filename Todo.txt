@@ -1,10 +1,18 @@
 This is a simple Todo list of all the fearures I wanna work on
 
-• Finish /interact violence
-• /toaster would be cool, imagine all the things users could find
-• implement a ChatGPT type function
+• re-implement /interact violence
+
+• /toaster would be cool,
+    Mostly for secrets and stuff
+
+• implement a ChatGPT type function,
+    possibly using gpt4all for now
+
 • /quotes suggested by Kohvi<3
-• implement Tenor into /interact for gifs 
+
+• implement gifs into /interact for gifs,
+    This would be done using an API 
+    
 • ticket system
 
 
