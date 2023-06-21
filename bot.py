@@ -118,6 +118,7 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
 @bot.listen(hikari.MemberCreateEvent)
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
     user = event.member.mention
+    server = event.get_guild().name
     try:
         channel = await get_json(event.guild_id,'welcome_channel')
         txt = await get_json(event.guild_id,'welcome_txt')
@@ -138,13 +139,14 @@ async def welcome_join(event: hikari.MemberCreateEvent) -> None:
         if isinstance(txt, list):
             txt = txt(random.randint(0,len(txt)-1))
             
-        await bot.rest.create_message(channel, txt.format(user=user),
+        await bot.rest.create_message(channel, txt.format(user=user, server=server),
                                       user_mentions=True)
 
 # When a member has left the guild       
 @bot.listen(hikari.MemberDeleteEvent)
 async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
     user = event.user.mention
+    server = event.get_guild().name
     try:
        await get_json(event.guild_id,'goodbye_channel')
         
@@ -158,7 +160,7 @@ async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
         if isinstance(txt, list):
             txt = txt(random.randint(0,len(txt)-1))
         
-        await bot.rest.create_message(channel, txt.format(user=user),
+        await bot.rest.create_message(channel, txt.format(user=user, server=server),
                                       user_mentions=True)
             
         
