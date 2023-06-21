@@ -232,38 +232,74 @@ async def cat(ctx: lightbulb.Context):
         fmat_type = "gif"
     cat_url = f"https://cataas.com/cat{gif}{text}{cat_filter}"
         
-    
-    #await ctx.respond('Getting catto...',flags=hikari.MessageFlag.LOADING)
-    
     try:
-        
         response = requests.get(cat_url, stream=True, timeout=5)
         response.raise_for_status()
+
         with Image.open(BytesIO(response.content)) as im:
             im.thumbnail((1024, 1024))
-            im.save("temp_cat." + fmat_type, save_all=True)
-
-        await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
     
-        os.remove(f"temp_cat.{fmat_type}")
-        
+            # Save the image based on its format
+            if fmat_type == 'gif':
+                frames = im.n_frames  # Get the total number of frames in the GIF
+                for frame in range(frames):
+                    im.seek(frame)
+                    im.save(f"temp_cat_frame_{frame}.gif")
+            else:
+                im.save("temp_cat." + fmat_type)
+            
     except requests.exceptions.HTTPError:
         cat_url = f"https://cataas.com/cat{text}{cat_filter}"
         response = requests.get(cat_url, stream=True, timeout=5)
+        
         response.raise_for_status()
+
         with Image.open(BytesIO(response.content)) as im:
             im.thumbnail((1024, 1024))
-            im.save("temp_cat." + fmat_type, save_all=True)
+            frames = im.n_frames  # Get the total number of frames in the GIF
+            
+            for frame in range(frames):
+                im.seek(frame)
+                im.save(f"temp_cat_frame_{frame}.gif")
 
         await ctx.respond(hikari.File(f"temp_cat.{fmat_type}", 'cat.png'))
 
         await ctx.respond("You can't use this filter with a gif!\nI've given a still image instead",
                           flags=hikari.MessageFlag.EPHEMERAL)
         
-        os.remove(f"temp_cat.{fmat_type}")
-        
     except requests.exceptions.ConnectionError:
         await ctx.respond('Nuuuuu\nCat as a Service is down right now... ;-;\nHelp support its creator!\nhttps://www.buymeacoffee.com/kevinbalicot')
+    
+    os.remove(f"temp_cat.{fmat_type}")
+    
+@bot.command
+@lightbulb.option('text',
+                  'insert the text for the bot to say')
+@lightbulb.command('say',
+                   'make the bot say something')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def say(ctx: lightbulb.Context):
+    text = ctx.options.text
+    
+    if "https:" in text or "http:" in text:
+        text_split = text.split(' ')
+        
+        for x in text_split:
+            if "https:" in x or "http:" in x:
+                text = text.replace(x,'[link]')
+                
+        await ctx.respond(text,
+                      user_mentions=True,
+                      role_mentions=False,
+                      mentions_everyone=False)
+        
+        return await ctx.respond("Due to exploitation reasons, links cannot be posted by this bot.. sorry..",
+                          delete_after=2)
+            
+    await ctx.respond(text,
+                      user_mentions=True,
+                      role_mentions=False,
+                      mentions_everyone=False)
     
 
 # Any plugin with the extention .py.off will not be implemented

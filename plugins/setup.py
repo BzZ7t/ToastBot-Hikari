@@ -7,7 +7,7 @@ import lightbulb
 # Common variables
 plugin = lightbulb.Plugin('setup')
 help_user_join_leave = '''
-`{member}` - mention a member
+`{user}` - mention a user
 `{server}` - current name of the server
 
 You can also use `,` to make a list of messages that the bot will randomly choose from
