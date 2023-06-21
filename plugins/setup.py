@@ -1,6 +1,7 @@
 # imports
 import json
 
+import os
 import hikari
 import lightbulb
 
@@ -30,6 +31,12 @@ async def json_write(ctx: lightbulb.Context,dic):
         open(file_location,'r+', encoding="utf-8")
     
     except FileNotFoundError or json.decoder.JSONDecodeError:
+            try:
+                os.mkdir(r'server_save/')
+            
+            except FileExistsError:
+                pass
+            
             with open(file_location,'x', encoding="utf-8") as fs:
                 dic['server_name'] = ctx.get_guild().name
                 json_file = dic
