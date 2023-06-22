@@ -21,15 +21,16 @@ async def json_write(ctx: lightbulb.Context,dic):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
     for key in dic.keys():
-        if isinstance(dic[key], list):
+        try:
             if ',' in dic[key]:
                 dic[key] = dic[key].split(',')
-                
+            
                 for x in dic[key]:
                     if x.startswith(' '):
                         index = dic[key].index(x) 
                         dic[key][index] = dic[key][index].replace(" ", "", 1)
-        
+        except TypeError:
+            pass
             
     try:
         open(file_location,'r+', encoding="utf-8")
@@ -107,9 +108,9 @@ async def welbye(ctx:lightbulb.Context, type):
     channel = await get_json(server.id, f"{type}_channel")
     message = await get_json(server.id, f"{type}_txt")
     if isinstance(message, list):
-        message = message(random.randint(0,len(message)-1))
+        message = random.choice(message)
 
-    await ctx.edit_last_response(f"{type} channel has successfully been set to {channel.mention}\n{message.format(member=member,server=server.name,member_count=server.member_count)}", 
+    await ctx.edit_last_response(f"{type} channel has successfully been set to <#{channel}>\n{message.format(member=member, server=server.name, count=server.member_count)}", 
                                  user_mentions=False)
 
 # Listeners 

@@ -104,7 +104,7 @@ async def eightball(ctx: lightbulb.Context):
     message = ctx.options.text
     ball = open("./plugins/assets/fun/8ball.txt", "r",encoding='utf-8').read().split("\n")
     
-    await ctx.respond(f"{user}: {message},\n{ball[random.randint(0,len(ball))]}")
+    await ctx.respond(f"{user}: {message},\n{random.choice(ball)}")
     
 # Loads the plugin
 def load(bot):
