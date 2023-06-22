@@ -31,14 +31,9 @@ bot = lightbulb.BotApp(token=TOKEN,
 miru.install(bot)
 
 #/#/#/#/#/#/#/# ---> Varibles
-global dev_mode
 toastbot_log = 1114676105312489554
 
 #/#/#/#/#/#/#/#/#/#/#/# ---> Functions
-async def get_json(server, key):
-    with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
-        jsn = json.load(json_file)
-    return jsn[key]
 
 #/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/#/# ---> Listeners
 
@@ -114,53 +109,6 @@ async def on_command_error(event: lightbulb.CommandErrorEvent) -> None:
                                         flags=hikari.MessageFlag.EPHEMERAL)
         raise event.exception
 
-# When a member has joined a guild
-@bot.listen(hikari.MemberCreateEvent)
-async def welcome_join(event: hikari.MemberCreateEvent) -> None:
-    user = event.member.mention
-    try:
-        channel = await get_json(event.guild_id,'welcome_channel')
-        txt = await get_json(event.guild_id,'welcome_txt')
-
-    except FileNotFoundError or KeyError:
-        pass
-    
-    else:
-        try:
-            role = await get_json(event.guild_id, 'welcome_role')
-            
-        except KeyError:
-            pass
-        
-        else:
-            bot.rest.add_role_to_member(event.guild_id,user,role)
-        
-        if isinstance(txt, list):
-            txt = txt(random.randint(0,len(txt)-1))
-            
-        await bot.rest.create_message(channel, txt.format(user=user),
-                                      user_mentions=True)
-
-# When a member has left the guild       
-@bot.listen(hikari.MemberDeleteEvent)
-async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
-    user = event.user.mention
-    try:
-       await get_json(event.guild_id,'goodbye_channel')
-        
-    except FileNotFoundError or KeyError:
-        pass
-    
-    else:
-        channel = await get_json(event.guild_id,'goodbye_channel')
-        txt = await get_json(event.guild_id,'goodbye_txt')
-        
-        if isinstance(txt, list):
-            txt = txt(random.randint(0,len(txt)-1))
-        
-        await bot.rest.create_message(channel, txt.format(user=user),
-                                      user_mentions=True)
-            
         
 # /ping
 # Says "pong!" followed by bot latency
