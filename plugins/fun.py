@@ -23,7 +23,7 @@ async def fun(ctx):
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def toastinsult(ctx: lightbulb.Context):
     insult = open("./plugins/assets/fun/toast-insults.txt", "r",encoding='utf-8').read().split("\n")
-    await ctx.respond(insult[random.randint(0,len(insult))])
+    await ctx.respond(random.choice(insult))
 
 # /fun diceroll <number>
 # Roll a dice (default is 6)
@@ -68,11 +68,8 @@ async def roll(ctx: lightbulb.Context):
                    'flip a 50/50 coin!')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def coinflip(ctx: lightbulb.Context):
-    coin_result = 'Tails'
+    coin = random.choice(['Tails','Heads'])
     guess = ctx.options.guess
-    
-    if random.randint(0,1) == 1:
-        coin_result = 'Heads'
     
     await ctx.respond('The coin landed on')
     await asyncio.sleep(0.25)
@@ -82,13 +79,13 @@ async def coinflip(ctx: lightbulb.Context):
     await asyncio.sleep(0.25)
     await ctx.edit_last_response('The coin landed on...')
     await asyncio.sleep(1)
-    await ctx.edit_last_response(f'The coin landed on **{coin_result}**!')
+    await ctx.edit_last_response(f'The coin landed on **{coin}**!')
     
     if guess != 'None':
-        if guess == coin_result:
-            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed correctly! (**{guess}**)')
+        if guess == coin:
+            await ctx.edit_last_response(f'The coin landed on **{coin}**!\nYou guessed correctly! (**{guess}**)')
         else:
-            await ctx.edit_last_response(f'The coin landed on **{coin_result}**!\nYou guessed incorrectly (**{guess}**)')
+            await ctx.edit_last_response(f'The coin landed on **{coin}**!\nYou guessed incorrectly (**{guess}**)')
 
 # /fun 8ball <text>
 # Shake a unique 8-ball
@@ -96,7 +93,7 @@ async def coinflip(ctx: lightbulb.Context):
 @lightbulb.option('text',
                   'enter somthing that the 8-ball will respond to',
                   required=True)
-@lightbulb.command('8ball',
+@lightbulb.command('8-ball',
                    'Shake a unique 8-ball')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def eightball(ctx: lightbulb.Context):
