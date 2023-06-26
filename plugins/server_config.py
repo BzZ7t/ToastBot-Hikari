@@ -13,8 +13,8 @@ help_user_join_leave = '''
 `{server}` - current name of the server
 `{count}` - Number of members in a server
 
-You can also use `,` to make a list of messages that the bot will randomly choose from
-An example of that would be `message1,message2`'''
+You can also use `/r` to make a list of messages that the bot will randomly choose from
+An example of that would be `message1/rmessage2`'''
 
 welcome_keys = ['welcome_channel',
                 'welcome_txt',
@@ -40,8 +40,8 @@ async def json_write(ctx: lightbulb.Context,dic):
     file_location = r"server_save/{server}.json".format(server=server)
     for key in dic.keys():
         try:
-            if ',' in dic[key] and 'ticket' not in key:
-                dic[key] = dic[key].split(',')
+            if '/r' in dic[key] and 'ticket' not in key:
+                dic[key] = dic[key].split('/r')
             
                 for x in dic[key]:
                     if x.startswith(' '):
