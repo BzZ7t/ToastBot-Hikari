@@ -332,6 +332,15 @@ async def openticket(ctx: lightbulb.Context):
     channel_id = await ctx.get_channel().app.rest.create_guild_text_channel(server.id,
                                                                             channel_name,
                                                                             )
+    
+    # Very strange issue with edit_channel(), Error leads to following:
+     
+    # File "/home/mint/.local/lib/python3.10/site-packages/hikari/internal/data_binding.py", line 356, in put_array
+    # self[key] = [conversion(value) for value in values]
+    # TypeError: 'PermissionOverwrite' object is not iterable
+    
+    # TODO: Possible Hikari bug, if not, figure  out what you did wrong
+    
     await ctx.bot.rest.edit_channel(channel_id,
                                     permission_overwrites=hikari.PermissionOverwrite(
                                         id=server.id,
@@ -339,6 +348,7 @@ async def openticket(ctx: lightbulb.Context):
                                         deny=(
                                             hikari.Permissions.VIEW_CHANNEL
                                             | hikari.Permissions.SEND_MESSAGES
+                                            | hikari.Permissions.READ_MESSAGE_HISTORY
                                             )
                                         )
                                     )
@@ -350,6 +360,7 @@ async def openticket(ctx: lightbulb.Context):
                                         allow=(
                                             hikari.Permissions.VIEW_CHANNEL
                                             | hikari.Permissions.SEND_MESSAGES
+                                            | hikari.Permissions.READ_MESSAGE_HISTORY
                                             )
                                         )
                                     )
@@ -361,9 +372,11 @@ async def openticket(ctx: lightbulb.Context):
                                         allow=(
                                             hikari.Permissions.VIEW_CHANNEL
                                             | hikari.Permissions.SEND_MESSAGES
+                                            | hikari.Permissions.READ_MESSAGE_HISTORY
+                                            )
                                         )
-                                    ))
-    await ctx.bot.rest.edit_channel(channel_id)
+                                    )
+    
     await ctx.bot.rest.create_message(channel_id,message.format(member=member.mention, mod='<@&{mod}>'),
                                       user_mentions=True,role_mentions=True)
     await json_write(ctx,{"ticket_num": number})
