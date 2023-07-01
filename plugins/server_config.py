@@ -6,8 +6,11 @@ import hikari
 import lightbulb
 import miru
 
-# Common variables
+
 plugin = lightbulb.Plugin('server_config')
+plugin.add_checks(lightbulb.guild_only)
+
+# Common variables
 help_user_join_leave = '''
 `{member}` - mention a user
 `{server}` - current name of the server
