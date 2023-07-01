@@ -1,0 +1,37 @@
+// This is an example json file and only made to show how they're used
+// (yes, statments in here are illegal, hence why its a .txt)
+// Any number is an ID or what can be called a 'Snowflake'
+
+{
+  "server_name": "Name Of Server",
+  "mod_role": 1234567890123456789,
+  "welcome_channel": 1234567890123456789,
+  "welcome_txt": [
+    "Hi {member}, welcome to {server}, we have now have {count} members!",
+    "Hello {member}, welcome to {server}, we have now have {count} members!"
+  ],
+  "welcome_role": 1234567890123456789,
+  "goodbye_channel": 1234567890123456789,
+  "goodbye_txt": [
+    "{member}, just left us, we have now have {count} members..",
+    "goodbye {member}"
+  ],
+  "ticket_channel": 1234567890123456789,
+  "ticket_txt": "Any mod related issues?\nPress the button below to create a ticket!",
+  "ticket_create_txt": "{member} a moderator will be with you shortly\n{mod}",
+  "ticket_num": 0,
+  "ticket_message": 1234567890123456789
+}
+
+// All strings can be formatted into the following,
+// {member} - mention a user
+// {server} - current name of the server
+// {count} - Number of members in a server
+
+// You can also use /r to make a list of messages that the bot will randomly choose from
+// An example of that would be message1/rmessage2
+
+// is there a better way of doing this?
+// Yes, but not at my brain IQ, thanks for the compliment 
+
+// will probably make this into nested dictionaries like welcome:{thing: value} instead of welcome_{thing}: value
