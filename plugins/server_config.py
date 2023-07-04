@@ -1,7 +1,7 @@
 # imports
 import json
 import random
-
+import os
 import hikari
 import lightbulb
 import miru
@@ -178,15 +178,17 @@ async def ticket_create(ctx: lightbulb.Context):
     
     # TODO: Possible Hikari bug, if not, figure  out what you did wrong
     
+    perms = (hikari.Permissions.VIEW_CHANNEL |
+            hikari.Permissions.SEND_MESSAGES |
+            hikari.Permissions.READ_MESSAGE_HISTORY)
+    
+
     await ctx.bot.rest.edit_channel(channel_id,
                                     permission_overwrites=hikari.PermissionOverwrite(
                                         id=server.id,
                                         type=hikari.PermissionOverwriteType.ROLE,
-                                        deny=(
-                                            hikari.Permissions.VIEW_CHANNEL
-                                            | hikari.Permissions.SEND_MESSAGES
-                                            | hikari.Permissions.READ_MESSAGE_HISTORY
-                                            )
+                                        deny=perms,
+                                        
                                         ),
                                     )
     
@@ -194,11 +196,7 @@ async def ticket_create(ctx: lightbulb.Context):
                                     permission_overwrites=hikari.PermissionOverwrite(
                                         id=member,
                                         type=hikari.PermissionOverwriteType.MEMBER,
-                                        allow=(
-                                            hikari.Permissions.VIEW_CHANNEL
-                                            | hikari.Permissions.SEND_MESSAGES
-                                            | hikari.Permissions.READ_MESSAGE_HISTORY
-                                            )
+                                        allow=perms
                                         )
                                     )
     
@@ -206,11 +204,7 @@ async def ticket_create(ctx: lightbulb.Context):
                                     permission_overwrites=hikari.PermissionOverwrite(
                                         id=mod,
                                         type=hikari.PermissionOverwriteType.ROLE,
-                                        allow=(
-                                            hikari.Permissions.VIEW_CHANNEL
-                                            | hikari.Permissions.SEND_MESSAGES
-                                            | hikari.Permissions.READ_MESSAGE_HISTORY
-                                            )
+                                        allow=perms
                                         )
                                     )
     
@@ -232,9 +226,19 @@ class tickets_system(miru.View):
 # Listens to a server name change TODO: unsure is this is its only function, docs says "Event fired when an existing guild is updated" which is so vague
 @plugin.listener(hikari.StartedEvent)
 async def persistant_miru(event: hikari.StartedEvent):
-    view = tickets_system()
-    await view.start()
-    pass
+    for path in os.listdir('server_save'):
+        server = path.split('.')[0]
+        channel = await json_get(server, 'ticket_channel')
+        message = await json_get(server, 'ticket_message')
+        message_txt = await json_get(server, 'ticket_txt')
+        view = tickets_system()
+        msg = await event.app.rest.edit_message(channel,
+                                            message,
+                                            message_txt,
+                                            components=view,
+                                            )
+        await view.start(msg)
+
 
 @plugin.listener(hikari.GuildUpdateEvent)
 async def guild_name_update(event: hikari.GuildUpdateEvent):
@@ -400,7 +404,7 @@ async def tickets(ctx: lightbulb.Context):
     
     view = tickets_system()
     message = await ctx.bot.rest.create_message(channel,message, components=view)
-    await view.start(message)  #TODO: why does this not fucking work???
+    await view.start(message)
     await json_write(ctx,{'ticket_message': message.id})
     
 
