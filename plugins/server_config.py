@@ -18,38 +18,23 @@ help_user_join_leave = '''
 You can also use `/r` to make a list of messages that the bot will randomly choose from
 An example of that would be `message1/rmessage2`'''
 
-welcome_keys = ['welcome_channel',
-                'welcome_txt',
-                'welcome_role',
-                ]
-
-goodbye_keys = ['goodbye_channel',
-                'goodbye_txt',
-                ]
-
-ticket_keys = ['ticket_channel',
-               'ticket_message',
-               'ticket_txt',
-               'ticket_create_txt',
-               'ticket_num']
-
-misc_keys = ['server_name',
-             'mod_role']
 
 # Common functions
 # Writes a dictionary to an existing/new json file
 async def json_write(ctx: lightbulb.Context,dic):
     server = ctx.get_guild().id
     file_location = r"server_save/{server}.json".format(server=server)
-    for key in dic.keys():
+    cmd = ctx.command
+    dicsub = dic[cmd.name]
+    for key in dicsub.keys():
         try:
-            if '/r' in dic[key] and 'ticket' not in key:
-                dic[key] = dic[key].split('/r')
+            if '/r' in dicsub[key] and 'txt' in key:
+                dicsub[key] = dicsub[key].split('/r')
             
-                for x in dic[key]:
+                for x in dicsub[key]:
                     if x.startswith(' '):
-                        index = dic[key].index(x) 
-                        dic[key][index] = dic[key][index].replace(" ", "", 1)
+                        index = dicsub[key].index(x) 
+                        dicsub[key][index] = dicsub[key][index].replace(" ", "", 1)
         
         except TypeError:
             pass
@@ -59,7 +44,8 @@ async def json_write(ctx: lightbulb.Context,dic):
     
     except FileNotFoundError or json.decoder.JSONDecodeError:
             with open(file_location,'x', encoding="utf-8") as fs:
-                dic['server_name'] = ctx.get_guild().name
+                dic['info'] = {}
+                dic['info']['name'] = ctx.get_guild().name
                 json_file = dic
                 json.dump(json_file,fs,indent=2)
                 
@@ -71,34 +57,34 @@ async def json_write(ctx: lightbulb.Context,dic):
             json.dump(json_file,fs,indent=2)
 
 # Deletes a Json's keys from key_list   
-async def json_erase(ctx: lightbulb.Context, key_list):
-    server = ctx.get_guild().id
+async def json_erase(ctx: lightbulb.Context, server, key, subkey):
     file_location = r"server_save/{server}.json".format(server=server)
     
-    if ctx.options.setting == 'ticket':
-        channel = await json_get(server,'ticket_channel')
-        message = await json_get(server,'ticket_message')
-        await ctx.bot.rest.delete_message(channel,message)
+    if key == 'tickets':
+        channel = await json_get(server, key, 'channel')
+        message = await json_get(server, key, 'message')
+        await ctx.bot.rest.delete_message(channel, message)
 
     try:
         with open(file_location,'r+', encoding="utf-8") as fs:
             json_file = json.load(fs)
-            
-            for x in key_list:  # This is fucking jank, TODO: Make this not jank
-                try:
-                    del json_file[x]
+            try:
+                if subkey == 'all':
+                    del json_file[key]
+                else:
+                    del json_file[key][subkey]
                 
-                except KeyError:
-                    return
+            except KeyError:
+                return
                 
             fs = open(file_location,'w', encoding="utf-8")
             json.dump(json_file,fs,indent=2)
     
-    except FileNotFoundError or json.decoder.JSONDecodeError or KeyError:
+    except FileNotFoundError or KeyError:
         pass
     
         
-async def json_get(server, key):
+async def json_get(server, key, subkey):
     try:
         open(f'server_save/{server}.json', 'r', encoding='utf-8')
         
@@ -108,44 +94,40 @@ async def json_get(server, key):
     else:
         with open(f'server_save/{server}.json', 'r', encoding='utf-8') as json_file:
             jsn = json.load(json_file)
-            
             try:
-                return jsn[key]
+                if subkey == 'all':
+                    return jsn[key]  
+                else:
+                    return jsn[key][subkey]
             
             except KeyError:
                 return None
 
-async def config_base(ctx:lightbulb.Context, type):
-    message = ctx.options.message
-    
-    if message.lower() == 'reset':
-        erase_list = [f'{type}_channel',f'{type}_txt']
-        
-        await json_erase(ctx, erase_list)
-        return await ctx.respond(f'{type} messsage has been reset')
-    
-    if message.lower() == 'help':
-        return await ctx.respond(f"Here's the syntax for /{type},{help_user_join_leave}")
-
-    member = ctx.author.mention
-    channel = ctx.options.channel
+async def config_base(ctx:lightbulb.Context, type):  # Unsure if will keep, TODO: If kept, rewrite for new system
     server = ctx.get_guild()
-    dict = {f"{type}_channel":channel.id,
-            f"{type}_txt":message}
+    channel = ctx.options.channel
+    message = ctx.options.message
+    member = ctx.author.mention
+    
+    dict = {
+        type:{
+            'channel': channel.id,
+            "txt":message
+            }}
     
     if type == 'welcome':
         if ctx.options.role != None:
             role = ctx.options.role
-            dict['welcome_role'] = role.id
+            dict[type]['role'] = role.id
         else:
             pass
 
     if type == 'ticket':
         creation_message = ctx.options.creation_message
         mod_role = ctx.options.mod_role
-        dict['ticket_create_txt'] = creation_message
-        dict['ticket_num'] = 0
-        dict['mod_role'] = mod_role.id
+        dict[type]['create_txt'] = creation_message
+        dict[type]['num'] = 0
+        dict[type]['mod_role'] = mod_role.id
     
     await ctx.respond(f"{type} channel will be set to {channel}\n{message}")
     await json_write(ctx,dict)
@@ -228,70 +210,70 @@ class tickets_system(miru.View):
 async def persistant_miru(event: hikari.StartedEvent):
     for path in os.listdir('server_save'):
         server = path.split('.')[0]
-        channel = await json_get(server, 'ticket_channel')
-        message = await json_get(server, 'ticket_message')
-        message_txt = await json_get(server, 'ticket_txt')
+        tickets = await json_get(server, 'tickets', 'all')
+        if tickets == None:
+            continue
+        
+        channel = await json_get(server, 'tickets', 'channel')
+        message = await json_get(server, 'tickets', 'message')
+        txt = await json_get(server, 'tickets', 'txt')
         view = tickets_system()
-        msg = await event.app.rest.edit_message(channel,
-                                            message,
-                                            message_txt,
-                                            components=view,
-                                            )
+        msg = await event.app.rest.edit_message(channel, message, txt,
+                                            components=view)
         await view.start(msg)
+        
+@plugin.listener(hikari.MessageCreateEvent)
+async def level_xp(event: hikari.MessageCreateEvent):
+    pass # for now
 
 
 @plugin.listener(hikari.GuildUpdateEvent)
 async def guild_name_update(event: hikari.GuildUpdateEvent):
     guild_name = event.get_guild().name
-    await json_write(event,{"server_name": guild_name})
+    save = {'info': {
+        'server_name': guild_name,
+    }}
+    await json_write(event, save)
 
 # When a member has joined a guild
 @plugin.listener(hikari.MemberCreateEvent)
 async def welcome_join(event: hikari.MemberCreateEvent) -> None:
-    member = event.member
     server = event.get_guild()
-    channel = await json_get(server.id,'welcome_channel')
-    txt = await json_get(server.id,'welcome_txt')
-
-    if channel == None or txt == None:
+    welcome = await json_get(server.id, 'welcome', 'all')
+    if welcome == None:
         return
     
-    try:
-        role = await json_get(event.guild_id, 'welcome_role')
-        
-    except KeyError:
-        pass
+    role = await json_get(server.id, 'welcome', 'role')
+    member = event.member
+    channel = await json_get(server.id,'welcome', 'channel')
+    txt = await json_get(server.id,'welcome', 'txt')
     
-    else:
+    if role != None:
         await event.app.rest.add_role_to_member(event.guild_id,member,role)
     
     if isinstance(txt, list):
         txt = random.choice(txt)
     
-    await event.app.rest.create_message(channel, txt.format(member=member.mention,server=server.name,count=server.member_count),
-                                        user_mentions=True)
+    txt = txt.format(member=member.mention,server=server.name,count=server.member_count)
+    await event.app.rest.create_message(channel, txt, user_mentions=True)
 
 # When a member has left the guild       
 @plugin.listener(hikari.MemberDeleteEvent)
-async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
-    member = event.old_member
+async def goodbye_left(event: hikari.MemberDeleteEvent) -> None:
     server = event.get_guild()
+    goodbye = await json_get(server.id, 'goodbye', 'all')
+    if goodbye == None:
+        return
     
-    try:
-       await json_get(event.guild_id,'goodbye_channel')
-        
-    except FileNotFoundError or KeyError:
-        pass
+    member = event.old_member
+    channel = await json_get(server.id,'goodbye', 'channel')
+    txt = await json_get(server.id,'goodbye', 'txt')
     
-    else:
-        channel = await json_get(event.guild_id,'goodbye_channel')
-        txt = await json_get(event.guild_id,'goodbye_txt')
-        
-        if isinstance(txt, list):
-            txt = random.choice(txt)
-        
-        await event.app.rest.create_message(channel, txt.format(member=member.display_name,server=server.name,member_count=server.member_count),
-                                      user_mentions=True)
+    if isinstance(txt, list):
+        txt = random.choice(txt)
+    
+    txt = txt.format(member=member.mention,server=server.name,count=server.member_count)
+    await event.app.rest.create_message(channel, txt, user_mentions=True)
 
 # Commands
 # /reset <setting[welcome,goodbye,]
@@ -300,18 +282,19 @@ async def welcome_join(event: hikari.MemberDeleteEvent) -> None:
 @lightbulb.option('setting',
                   'choose a setting to reset',
                   required=True,
-                  choices=[hikari.CommandChoice(name='welcome',value='welcome'),
-                           hikari.CommandChoice(name='goodbye',value='goodbye'),
-                           hikari.CommandChoice(name='tickets',value='ticket'),])
+                  choices=['welcome',
+                           'goodbye',
+                           'tickets',
+                           'levels',])
 @lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command('reset',
                    'reset server settings')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def reset(ctx: lightbulb.Context):
+    server = ctx.get_guild()
     setting = ctx.options.setting
-    erase_list = globals()[f'{setting}_keys']
     
-    await json_erase(ctx, erase_list)
+    await json_erase(ctx, server.id, setting, 'all')
     await ctx.respond(f'{setting} setting has been reset')
     
 
@@ -336,20 +319,48 @@ async def reset(ctx: lightbulb.Context):
                    'set up a welcome channel') 
 @lightbulb.implements(lightbulb.SlashCommand)
 async def welcome(ctx: lightbulb.Context):
-    await config_base(ctx, 'welcome')
-    
+    # await config_base(ctx, 'welcome')
+    server = ctx.get_guild()
+    channel = ctx.options.channel
     role = ctx.options.role
-    if role != None:
-        server = ctx.get_guild()
-        channel = await json_get(server.id,'welcome_channel')
-        member = ctx.author.mention
-        message = await json_get(server.id, 'welcome_txt')
+    member = ctx.author
+    txt = ctx.options.message
+    cmd = ctx.command
     
-        await json_write(ctx,{"welcome_role": role.id})
-        if isinstance(message, list):
-            message = random.choice(message)
-        await ctx.edit_last_response(f"Welcome channel has successfully been set to <#{channel}>\nUser will join with role: <@&{role}>\n{message.format(member=member, server=server.name, count=server.member_count)}", 
-                                 user_mentions=False, role_mentions=False)
+    save = {
+        cmd.name:{
+            'channel': channel.id,
+            'role': role.id,
+            'txt': txt,
+    }}
+    
+    
+    await ctx.respond(f'The {cmd.name} settings will be set to the following,\nChannel: {channel.name}\nRole on join: {role.name}\nmessage:\n{txt}')
+    await json_write(ctx,save)
+    
+    print(f'{server}: {server.id}')
+    channel = await json_get(server.id, cmd.name, 'channel')
+    role = await json_get(server.id, cmd.name, 'role')
+    txt = await json_get(server.id, cmd.name, 'txt')
+
+    response = await ctx.edit_last_response(f'The levels have been set to the following,\n\nChannel: <#{channel}>\nRole on join: <@&{role}>\nmessage:\n')
+    
+    if isinstance(txt, list):
+        total_txt = 0
+        for x in txt:
+            x = x.format(user=member.mention,server=server.name,count=server.member_count)
+            ctx.bot.rest.create_message(response.channel_id, x, 
+                                        user_mentions=True,
+                                        role_mentions=False)
+            total_txt =+ 1
+
+        await ctx.bot.rest.create_message(response.channel_id, f'\nI will randomly choose one of the {total_txt} messages when a user joins')
+    
+    else:
+        #txt = txt.format(user=member.mention,server=server.name,count=server.member_count)
+        await ctx.bot.rest.create_message(response.channel_id, txt.format(user=member.mention,server=server.name,count=server.member_count), 
+                                    user_mentions=True,
+                                    role_mentions=False)
         
     
 # /goodbye <channel> <message>
@@ -367,8 +378,45 @@ async def welcome(ctx: lightbulb.Context):
                    'set up a goodbye channel') 
 @lightbulb.implements(lightbulb.SlashCommand)
 async def goodbye(ctx: lightbulb.Context):
-    await config_base(ctx, 'goodbye')
+    #await config_base(ctx, 'goodbye')
+    server = ctx.get_guild()
+    channel = ctx.options.channel
+    member = ctx.author
+    txt = ctx.options.message
+    cmd = ctx.command
+    
+    save = {
+        cmd.name:{
+            'channel': channel.id,
+            'txt': txt,
+            }}
+    
+    
+    await ctx.respond(f'The {cmd.name} settings will be set to the following,\nChannel: {channel.name}\nmessage:\n{txt}')
+    await json_write(ctx,save)
+    
+    channel = await json_get(server.id, cmd.name, 'channel')
+    txt = await json_get(server.id, cmd.name, 'txt')
 
+    response = await ctx.edit_last_response(f'The {cmd.name} settings have been set to the following,\n\nChannel: <#{channel}>\nMessage/s:')
+    
+    if isinstance(txt, list):
+        total_txt = 0
+        for x in txt:
+            x = x.format(user=member.mention,server=server.name,count=server.member_count)
+            ctx.bot.rest.create_message(response.channel_id, x, 
+                                        user_mentions=True,
+                                        role_mentions=False)
+            total_txt =+ 1
+
+        await ctx.bot.rest.create_message(response.channel_id, f'\nI will randomly choose one of the {total_txt} messages when a user leaves')
+    
+    else:
+        txt = txt.format(user=member.mention,server=server.name,count=server.member_count)
+        await ctx.bot.rest.create_message(response.channel_id, txt, 
+                                    user_mentions=True,
+                                    role_mentions=False)
+            
 @plugin.command
 @lightbulb.option('creation_message',
                   'The message sent once a user has created a ticket',
@@ -386,26 +434,58 @@ async def goodbye(ctx: lightbulb.Context):
                   'set the tickets channel',
                   hikari.TextableGuildChannel,
                   required=True)
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.command('tickets',
                    'set up a tickets channel', 
                    auto_defer=True)
 @lightbulb.implements(lightbulb.SlashCommand)
 async def tickets(ctx: lightbulb.Context):
-    await config_base(ctx,'ticket')
+    # await config_base(ctx,'ticket')
     server = ctx.get_guild()
+    mod = ctx.options.mod_role
     member = ctx.author
-    mod = await json_get(server.id,"mod_role")
-    channel = await json_get(server.id,"ticket_channel")
-    message = await json_get(server.id,"ticket_txt")
-    creation_message = await json_get(server.id,"ticket_create_txt")
+    channel = ctx.options.channel
+    txt = ctx.options.message
+    creation_txt = ctx.options.creation_message
+    cmd = ctx.command
     
-    await ctx.edit_last_response(f"Ticket channel has successfully been set to <#{channel}>\n{message}\n\n{creation_message.format(member=member.mention,mod=f'<@&{mod}>')}", 
-                                 user_mentions=False, role_mentions=False)
+    await ctx.respond(f'The {cmd.name} settings will be set to the following,\nChannel: {channel.name}\nMessage:\n{txt}\nMessage when ticket is created:\n{creation_txt}')
     
     view = tickets_system()
-    message = await ctx.bot.rest.create_message(channel,message, components=view)
+    message = await ctx.bot.rest.create_message(channel,txt, components=view)
     await view.start(message)
-    await json_write(ctx,{'ticket_message': message.id})
+    save = {cmd.name:{
+        'mod': mod.id,
+        'channel': channel.id,
+        'message': message.id,
+        'txt': txt,
+        'creation_txt': creation_txt
+    }}
+    
+    await json_write(ctx, save)
+    mod = await json_get(server.id, cmd.name, 'mod')
+    channel = await json_get(server.id, cmd.name, 'channel')
+    txt = await json_get(server.id, cmd.name, 'txt')
+    creation_txt = await json_get(server.id, cmd.name, 'creation_txt')
+    
+    response = await ctx.edit_last_response(f'The {cmd.name} settings has been set to the following,\nChannel: <#{channel}>\nMessage:\n{txt}\nMessage/s when ticket is created:\n')
+    
+    if isinstance(txt, list):
+        total_txt = 0
+        for x in txt:
+            x = x.format(user=member.mention,server=server.name,count=server.member_count)
+            ctx.bot.rest.create_message(response.channel_id, x, 
+                                        user_mentions=True,
+                                        role_mentions=False)
+            total_txt =+ 1
+
+        await ctx.bot.rest.create_message(response.channel_id, f'\nI will randomly choose one of the {total_txt} messages when a user creates a ticket')
+    
+    else:
+        txt = txt.format(user=member.mention,server=server.name,count=server.member_count)
+        await ctx.bot.rest.create_message(response.channel_id, txt, 
+                                    user_mentions=True,
+                                    role_mentions=False)
     
 
 @plugin.command
@@ -416,7 +496,63 @@ async def tickets(ctx: lightbulb.Context):
 async def openticket(ctx: lightbulb.Context):
     await ctx.respond("You'll be mentioned once your ticket is created", flags=hikari.MessageFlag.EPHEMERAL)
     await ticket_create()
+
+
+@plugin.command
+@lightbulb.option('cooldown',
+                  'The the cooldown of xp given with each message in seconds (default is 60)',
+                  required=False,
+                  default=15)
+@lightbulb.option('maximum',
+                  'The maximum xp given to a user per message (default is 40)',
+                  required=False,
+                  default=40)
+@lightbulb.option('minimum',
+                  'The minumum xp given to a user per message (default is 15)',
+                  required=False,
+                  default=15)
+@lightbulb.option('enabled',
+                  'Enable or disable leveling',
+                  required=False,
+                  default=None,
+                  choices=[hikari.CommandChoice(name='Yes', value='True'),
+                           hikari.CommandChoice(name='No', value='False')
+                           ])
+@lightbulb.add_checks(lightbulb.has_guild_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command('levels',
+                   "configure the server's leveling system")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def levels(ctx: lightbulb.Context):
+    server = ctx.get_guild()
+    enabled = ctx.options.enabled
+    min_xp = ctx.options.minimum
+    max_xp = ctx.options.maximum
+    cooldown = ctx.options.cooldown
+    cmd = ctx.command
     
+    if enabled == None:
+        enabled = await json_get(server.id, cmd.name, 'enabled')
+    else:
+        enabled = bool(enabled)
+    
+    save = {
+        cmd.name:{
+            'enabled': enabled,
+            'min_xp': min_xp,
+            'max_xp': max_xp,
+            'cooldown': cooldown
+    }}
+    
+    
+    await ctx.respond(f'The {cmd.name} settings will be set to the following,\nEnabled: {enabled}\nMinimum XP: {min_xp}\nMaximum XP: {max_xp}\nXP Cooldown: {cooldown}')
+    await json_write(ctx,save)
+    enabled = await json_get(server.id, cmd.name, 'enabled')
+    min_xp = await json_get(server.id, cmd.name, 'min_xp')
+    max_xp = await json_get(server.id, cmd.name, 'max_xp')
+    cooldown = await json_get(server.id, cmd.name, 'cooldown')
+
+    await ctx.edit_last_response(f'The {cmd.name} settings have been set to the following,\nEnabled: `{enabled}`\nMinimum XP: `{min_xp}`\nMaximum XP: `{max_xp}`\nXP Cooldown: `{cooldown}`')
+
 # Loads the plugin
 def load(bot):
     bot.add_plugin(plugin)
