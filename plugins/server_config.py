@@ -21,11 +21,9 @@ An example of that would be `message1/rmessage2`'''
 
 # Common functions
 # Writes a dictionary to an existing/new json file
-async def json_write(ctx: lightbulb.Context,dic):
-    server = ctx.get_guild().id
-    file_location = r"server_save/{server}.json".format(server=server)
-    cmd = ctx.command
-    dicsub = dic[cmd.name]
+async def json_write(server, dic):
+    file_location = r"server_save/{server}.json".format(server=server.id)
+    dicsub = dic.keys()[1]
     startdic = dic
     try:
         for key in dicsub.keys():
@@ -47,7 +45,7 @@ async def json_write(ctx: lightbulb.Context,dic):
         except FileNotFoundError or json.decoder.JSONDecodeError:
                 with open(file_location,'x', encoding="utf-8") as fs:
                     dic['info'] = {}
-                    dic['info']['name'] = ctx.get_guild().name
+                    dic['info']['name'] = server.name
                     json_file = dic
                     json.dump(json_file,fs,indent=2)
                     
@@ -137,7 +135,7 @@ async def config_base(ctx:lightbulb.Context, type):  # Unsure if will keep, TODO
         dict[type]['mod_role'] = mod_role.id
     
     await ctx.respond(f"{type} channel will be set to {channel}\n{message}")
-    await json_write(ctx,dict)
+    await json_write(server.id,dict)
     channel = await json_get(server.id, f"{type}_channel")
     message = await json_get(server.id, f"{type}_txt")
     if isinstance(message, list):
@@ -199,7 +197,7 @@ async def ticket_create(ctx: lightbulb.Context):
     
     await ctx.bot.rest.create_message(channel_id,message.format(member=member.mention, mod=f'<@&{mod}>'),
                                     user_mentions=True,role_mentions=True)
-    await json_write(ctx,{"ticket_num": number})
+    await json_write(server.id,{"ticket_num": number})
 
 # Common classes
 class tickets_system(miru.View):
@@ -231,11 +229,11 @@ async def persistant_miru(event: hikari.StartedEvent):
 
 @plugin.listener(hikari.GuildUpdateEvent)
 async def guild_name_update(event: hikari.GuildUpdateEvent):
-    guild_name = event.get_guild().name
+    server = event.get_guild()
     save = {'info': {
-        'server_name': guild_name,
+        'server_name': server.name,
     }}
-    await json_write(event, save)
+    await json_write(server.id, save)
 
 # When a member has joined a guild
 @plugin.listener(hikari.MemberCreateEvent)
@@ -283,8 +281,12 @@ async def level_xp(event: hikari.MessageCreateEvent):
     if event.is_bot:
         return
     
+    server_id = event.message.guild_id
+    channel = event.channel_id
+    member = event.author
+    pfp = member.avatar_url
     
-
+    json_write(server_id)
 
 # Commands
 # /reset <setting[welcome,goodbye,]
@@ -347,7 +349,7 @@ async def welcome(ctx: lightbulb.Context):
     
     
     await ctx.respond(f'The {cmd.name} settings will be set to the following,\nChannel: {channel.name}\nRole on join: {role.name}\nmessage:\n{txt}')
-    await json_write(ctx,save)
+    await json_write(server.id,save)
     
     print(f'{server}: {server.id}')
     channel = await json_get(server.id, cmd.name, 'channel')
@@ -404,7 +406,7 @@ async def goodbye(ctx: lightbulb.Context):
     
     
     await ctx.respond(f'The {cmd.name} settings will be set to the following,\nChannel: {channel.name}\nmessage:\n{txt}')
-    await json_write(ctx,save)
+    await json_write(server.id,save)
     
     channel = await json_get(server.id, cmd.name, 'channel')
     txt = await json_get(server.id, cmd.name, 'txt')
@@ -473,7 +475,7 @@ async def tickets(ctx: lightbulb.Context):
         'creation_txt': creation_txt
     }}
     
-    await json_write(ctx, save)
+    await json_write(server.id, save)
     mod = await json_get(server.id, cmd.name, 'mod')
     channel = await json_get(server.id, cmd.name, 'channel')
     txt = await json_get(server.id, cmd.name, 'txt')
@@ -556,7 +558,7 @@ async def levels(ctx: lightbulb.Context):
     
     
     await ctx.respond(f'The {cmd.name} settings will be set to the following,\nEnabled: {enabled}\nMinimum XP: {min_xp}\nMaximum XP: {max_xp}\nXP Cooldown: {cooldown}')
-    await json_write(ctx,save)
+    await json_write(server.id,save)
     enabled = await json_get(server.id, cmd.name, 'enabled')
     min_xp = await json_get(server.id, cmd.name, 'min_xp')
     max_xp = await json_get(server.id, cmd.name, 'max_xp')
