@@ -26,35 +26,42 @@ async def json_write(ctx: lightbulb.Context,dic):
     file_location = r"server_save/{server}.json".format(server=server)
     cmd = ctx.command
     dicsub = dic[cmd.name]
-    for key in dicsub.keys():
-        try:
-            if '/r' in dicsub[key] and 'txt' in key:
-                dicsub[key] = dicsub[key].split('/r')
-            
-                for x in dicsub[key]:
-                    if x.startswith(' '):
-                        index = dicsub[key].index(x) 
-                        dicsub[key][index] = dicsub[key][index].replace(" ", "", 1)
-        
-        except TypeError:
-            pass
-            
+    startdic = dic
     try:
-        open(file_location,'r+', encoding="utf-8")
-    
-    except FileNotFoundError or json.decoder.JSONDecodeError:
-            with open(file_location,'x', encoding="utf-8") as fs:
-                dic['info'] = {}
-                dic['info']['name'] = ctx.get_guild().name
-                json_file = dic
+        for key in dicsub.keys():
+            try:
+                if '/r' in dicsub[key] and 'txt' in key:
+                    dicsub[key] = dicsub[key].split('/r')
+                
+                    for x in dicsub[key]:
+                        if x.startswith(' '):
+                            index = dicsub[key].index(x) 
+                            dicsub[key][index] = dicsub[key][index].replace(" ", "", 1)
+            
+            except TypeError:
+                pass
+                
+        try:
+            open(file_location,'r+', encoding="utf-8")
+
+        except FileNotFoundError or json.decoder.JSONDecodeError:
+                with open(file_location,'x', encoding="utf-8") as fs:
+                    dic['info'] = {}
+                    dic['info']['name'] = ctx.get_guild().name
+                    json_file = dic
+                    json.dump(json_file,fs,indent=2)
+                    
+        else:
+            with open(file_location,'r+', encoding="utf-8") as fs:
+                json_file = json.load(fs)
+                json_file = json_file | dic       
+                fs =  open(file_location,'w', encoding="utf-8")
                 json.dump(json_file,fs,indent=2)
                 
-    else:
-        with open(file_location,'r+', encoding="utf-8") as fs:
-            json_file = json.load(fs)
-            json_file = json_file | dic       
-            fs =  open(file_location,'w', encoding="utf-8")
-            json.dump(json_file,fs,indent=2)
+    except:
+        with open(file_location,'x', encoding="utf-8") as fs:
+            json.dump(startdic)
+            raise Exception
 
 # Deletes a Json's keys from key_list   
 async def json_erase(ctx: lightbulb.Context, server, key, subkey):
