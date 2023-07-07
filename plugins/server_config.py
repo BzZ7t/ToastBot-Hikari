@@ -221,11 +221,6 @@ async def persistant_miru(event: hikari.StartedEvent):
         msg = await event.app.rest.edit_message(channel, message, txt,
                                             components=view)
         await view.start(msg)
-        
-@plugin.listener(hikari.MessageCreateEvent)
-async def level_xp(event: hikari.MessageCreateEvent):
-    pass # for now
-
 
 @plugin.listener(hikari.GuildUpdateEvent)
 async def guild_name_update(event: hikari.GuildUpdateEvent):
@@ -274,6 +269,15 @@ async def goodbye_left(event: hikari.MemberDeleteEvent) -> None:
     
     txt = txt.format(member=member.mention,server=server.name,count=server.member_count)
     await event.app.rest.create_message(channel, txt, user_mentions=True)
+
+
+@plugin.listener(hikari.MessageCreateEvent)
+async def level_xp(event: hikari.MessageCreateEvent):
+    if event.is_bot:
+        return
+    
+    
+
 
 # Commands
 # /reset <setting[welcome,goodbye,]
